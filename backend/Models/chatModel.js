@@ -5,8 +5,8 @@ const chatSchema = new mongoose.Schema(
     date: { type: Date, default: Date.now },
     messages: [
       {
-        from: { type: String },
-        body: { type: String },
+        from: { type: String, required: true },
+        body: { type: String, required: true },
         date: { type: Date, default: Date.now },
       },
     ],

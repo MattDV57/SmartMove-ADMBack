@@ -3,6 +3,10 @@ import { Chat } from "../Models/chatModel.js";
 
 const router = express.Router();
 
+//Se pueden pasar las funciones a un "controller" o "service" si se quiere
+//Es temporal esto de hacer las operaciones en las rutas
+//TODO: Agregar hacer catch de errores
+//TODO: Mejores mensajes de errores
 router.get("/", (req, res) => {
   console.log(req);
   res.status(200).send("Hello world");
