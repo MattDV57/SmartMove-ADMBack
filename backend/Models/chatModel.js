@@ -2,14 +2,15 @@ import mongoose from "mongoose";
 
 const chatSchema = new mongoose.Schema(
   {
-    date: { type: Date, default: Date.now },
+    timestamp: { type: Date, default: Date.now },
     messages: [
       {
         from: { type: String, required: true },
         body: { type: String, required: true },
-        date: { type: Date, default: Date.now },
+        timestamp: { type: Date, default: Date.now },
       },
     ],
+    status: { type: Boolean, default: true },
   },
   { collection: "Chats" }
 );
