@@ -9,7 +9,6 @@ const router = express.Router();
 //TODO: Mejores mensajes de errores
 
 router.post("/", async (req, res) => {
-  console.log(req.body);
   const newChat = {
     date: req.body.date,
     title: req.body.title,
