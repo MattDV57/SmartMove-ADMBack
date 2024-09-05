@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Chat App</title>
+  </head>
+  <body>
+    <h1>Live Chat Room</h1>
+
+    <!-- Form for sending messages -->
+    <form id="chat-form">
+      <input id="username" type="text" placeholder="Enter username" required />
+      <input id="room" type="text" placeholder="Enter room" required />
+      <input id="msg" type="text" placeholder="Enter message" required />
+      <button type="submit">Send</button>
+    </form>
+
+    <!-- Disconnect Button -->
+    <button id="disconnect-btn">Disconnect</button>
+
+    <div id="messages"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      const form = document.getElementById("chat-form");
+      const messages = document.getElementById("messages");
+      const disconnectBtn = document.getElementById("disconnect-btn");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById("username").value;
+        const room = document.getElementById("room").value;
+        const msg = document.getElementById("msg").value;
+
+        // Join the room
+        if (!socket.room) {
+          socket.emit("joinRoom", { username, room });
+          socket.room = room;
+        }
+
+        // Send message
+        socket.emit("chatMessage", msg);
+
+        // Clear message input
+        document.getElementById("msg").value = "";
+      });
+
+      // Listen for messages (including disconnect messages)
+      socket.on("message", (message) => {
+        const div = document.createElement("div");
+        div.textContent = message;
+        messages.appendChild(div);
+      });
+
+      // Handle disconnection event from the server
+      socket.on("disconnect", () => {
+        const div = document.createElement("div");
+        div.textContent = "You have been disconnected from the server.";
+        messages.appendChild(div);
+      });
+
+      // Manually disconnect from the server using the Disconnect button
+      disconnectBtn.addEventListener("click", () => {
+        if (socket.connected) {
+          socket.disconnect(); // Manually disconnect from the server
+          const div = document.createElement("div");
+          div.textContent = "You have disconnected from the chat.";
+          messages.appendChild(div);
+        }
+      });
+    </script>
+  </body>
+</html>
