@@ -36,22 +36,21 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", ({ username, room }) => {
     socket.join(room);
     console.log(`${username} joined room: ${room}`);
-
     // Broadcast to the room that a new user has joined
     socket.to(room).emit("message", `${username} has joined the chat`);
+  });
 
-    // Handle sending messages to a room
-    socket.on("chatMessage", (messageObject) => {
-      const { body, from, to } = messageObject;
-      io.to(to).emit("message", `${from}: ${body}`);
-      console.log(messageObject);
-    });
+  // Handle sending messages to a room
+  socket.on("chatMessage", (messageObject) => {
+    const { body, from, to } = messageObject;
+    io.to(to).emit("message", `${from}: ${body}`);
+    console.log(messageObject);
+  });
 
-    // Handle user disconnection
-    socket.on("disconnect", () => {
-      console.log(`${username} disconnected`);
-      io.to(room).emit("message", `${username} has left the chat`);
-    });
+  // Handle user disconnection
+  socket.on("disconnect", () => {
+    console.log(`${username} disconnected`);
+    io.to(room).emit("message", `${username} has left the chat`);
   });
 });
 
