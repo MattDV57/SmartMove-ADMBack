@@ -35,15 +35,20 @@
         const username = document.getElementById("username").value;
         const room = document.getElementById("room").value;
         const msg = document.getElementById("msg").value;
+        const messageObject = {
+          body: msg,
+          from: username,
+          to: room,
+        };
 
         // Join the room
-        if (!socket.room) {
+        if (!socket.room || socket.room != room) {
           socket.emit("joinRoom", { username, room });
           socket.room = room;
         }
 
         // Send message
-        socket.emit("chatMessage", msg);
+        socket.emit("chatMessage", messageObject);
 
         // Clear message input
         document.getElementById("msg").value = "";

@@ -41,8 +41,10 @@ io.on("connection", (socket) => {
     socket.to(room).emit("message", `${username} has joined the chat`);
 
     // Handle sending messages to a room
-    socket.on("chatMessage", (msg) => {
-      io.to(room).emit("message", `${username}: ${msg}`);
+    socket.on("chatMessage", (messageObject) => {
+      const { body, from, to } = messageObject;
+      io.to(to).emit("message", `${from}: ${body}`);
+      console.log(messageObject);
     });
 
     // Handle user disconnection
