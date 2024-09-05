@@ -32,6 +32,17 @@ app.use("/chat", chatRoutes);
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
+  //TODO: Cliente - Crear Metodo "createRoom"
+  //Deberia inicializar un Chat Model en Mongodb
+  //Utilizar el id de este objeto como el id de la room
+
+  //TODO: Soporte - El equipo de soporte sería el que usa el método "joinRoom"
+  //Al unirse debería cargar los chats que el usuario ya mandó, asi los puede ver
+  //O evitamos que el usuario pueda mandar chats hasta que se conecte uno de soporte???
+  //Luego, los dos se comunican en el mismo room normalmente
+  //Se puede agregar encriptación, verificacion de permisos
+  //Funciones como exportar chat a mail serían a través de REST API
+
   // Join a room
   socket.on("joinRoom", ({ username, room }) => {
     socket.join(room);
@@ -48,6 +59,9 @@ io.on("connection", (socket) => {
   });
 
   // Handle user disconnection
+  //Por ahora solo envía un mensaje, pero podríamos mandar como un mensaje de Template
+  //Si te ha servido la experiencia, comentanos y blah blah blah
+  //E informar también de la opción de exportar chat a mail si la hacemos
   socket.on("disconnect", () => {
     console.log(`${username} disconnected`);
     io.to(room).emit("message", `${username} has left the chat`);
