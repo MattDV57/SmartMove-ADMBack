@@ -63,8 +63,8 @@ io.on("connection", (socket) => {
   //Si te ha servido la experiencia, comentanos y blah blah blah
   //E informar también de la opción de exportar chat a mail si la hacemos
   socket.on("disconnect", () => {
-    console.log(`${username} disconnected`);
-    io.to(room).emit("message", `${username} has left the chat`);
+    console.log(` disconnected`);
+    io.to(room).emit("message", ` has left the chat`);
   });
 });
 
