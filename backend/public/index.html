@@ -38,12 +38,13 @@
         const messageObject = {
           body: msg,
           from: username,
-          to: room,
+          chat: room,
         };
 
         // Join the room
         if (!socket.room || socket.room != room) {
-          socket.emit("joinRoom", { username, room });
+          const chat = room;
+          socket.emit("joinChat", { username, chat });
           socket.room = room;
         }
 

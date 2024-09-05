@@ -14,18 +14,19 @@ const socketHandler = (io) => {
     //Funciones como exportar chat a mail serían a través de REST API
 
     // Join a room
-    socket.on("joinRoom", ({ username, room }) => {
-      socket.join(room);
-      console.log(`${username} joined room: ${room}`);
+    socket.on("joinChat", ({ username, chat }) => {
+      console.log(chat);
+      socket.join(chat);
+      console.log(`${username} joined room: ${chat}`);
       // Broadcast to the room that a new user has joined
-      socket.to(room).emit("message", `${username} has joined the chat`);
+      socket.to(chat).emit("message", `${username} has joined the chat`);
     });
 
     // Handle sending messages to a room
     socket.on("chatMessage", (messageObject) => {
-      const { body, from, to } = messageObject;
-      if (to) {
-        io.to(to).emit("message", `${from}: ${body}`);
+      const { body, from, chat } = messageObject;
+      if (chat) {
+        io.to(chat).emit("message", `${from}: ${body}`);
       }
       console.log(messageObject);
     });
