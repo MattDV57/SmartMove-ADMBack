@@ -11,7 +11,7 @@
     <!-- Form for sending messages -->
     <form id="chat-form">
       <input id="username" type="text" placeholder="Enter username" required />
-      <input id="room" type="text" placeholder="Enter room" required />
+      <input id="room" type="text" placeholder="Enter room" />
       <input id="msg" type="text" placeholder="Enter message" required />
       <button type="submit">Send</button>
     </form>
@@ -41,15 +41,17 @@
           chat: room,
         };
 
-        // Join the room
-        if (!socket.room || socket.room != room) {
-          const chat = room;
-          socket.emit("joinChat", { username, chat });
-          socket.room = room;
+        if (room) {
+          socket.emit("joinChat", room);
+          socket.emit("chatMessage", messageObject);
+        } else {
+          // Join the room
+          if (!socket.room || socket.room != room) {
+            const chat = room;
+            socket.emit("createChat", room);
+            socket.room = room;
+          }
         }
-
-        // Send message
-        socket.emit("chatMessage", messageObject);
 
         // Clear message input
         document.getElementById("msg").value = "";
