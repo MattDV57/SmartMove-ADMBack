@@ -43,11 +43,23 @@ const socketHandler = (io) => {
 
     // Handle sending messages to a room
     socket.on("chatMessage", async (messageObject) => {
-      const { body, from, chat } = messageObject;
-      await Chat.findOne({ _id: "66de1f778bdc5580219f5641" });
-      if (chat) {
-        io.to(chat).emit("message", `${from}: ${body}`);
+      const { body, from, chatId } = messageObject;
+      const newMessage = {
+        from: from,
+        body: body,
+      };
+      const updatedChat = await Chat.findOneAndUpdate(
+        { _id: chatId }, // Find the chat document by its ObjectId
+        { $push: { messages: newMessage } }, // Push the new message into the messages array
+        { new: true, useFindAndModify: false } // Return the updated document after the update
+      );
+
+      console.log("This is the updated Chat");
+      console.log(updatedChat);
+      if (updatedChat) {
+        io.to(chatId).emit("message", `${from}: ${body}`);
       }
+      console.log("Message object");
       console.log(messageObject);
     });
 
