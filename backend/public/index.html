@@ -74,7 +74,6 @@
       // Manually disconnect from the server using the Disconnect button
       disconnectBtn.addEventListener("click", () => {
         if (socket.connected) {
-          socket.disconnect(); // Manually disconnect from the server
           const div = document.createElement("div");
           div.textContent = "You have disconnected from the chat.";
           messages.appendChild(div);
