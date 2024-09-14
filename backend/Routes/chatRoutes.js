@@ -14,11 +14,6 @@ router.get("/:chatId", async (req, res) => {
   return res.status(200).send(foundChat);
 });
 
-router.post("/claim", async (req, res) => {
-  const createdClaim = await Claim.create({});
-  return res.status(200).send(createdClaim);
-});
-
 router.put("/:chatId", async (req, res) => {
   const newMessage = {
     from: "Otra persona",
