@@ -10,7 +10,7 @@ const chatSchema = new mongoose.Schema(
         timestamp: { type: Date, default: Date.now },
       },
     ],
-    status: { type: Boolean, default: true },
+    active: { type: Boolean, default: true },
   },
   { collection: "Chats" }
 );

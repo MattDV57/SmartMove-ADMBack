@@ -1,3 +1,6 @@
+import { Chat } from "../Models/chatModel.js";
+import { isValidObjectId } from "mongoose";
+
 const socketHandler = (io) => {
   io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
@@ -6,29 +9,66 @@ const socketHandler = (io) => {
     //Deberia inicializar un Chat Model en Mongodb
     //Utilizar el id de este objeto como el id de la room
 
-    //TODO: Soporte - El equipo de soporte sería el que usa el método "joinRoom"
+    //TODO: Soporte - El equipo de soporte sería el que usa el método "joinChat"
     //Al unirse debería cargar los chats que el usuario ya mandó, asi los puede ver
     //O evitamos que el usuario pueda mandar chats hasta que se conecte uno de soporte???
     //Luego, los dos se comunican en el mismo room normalmente
     //Se puede agregar encriptación, verificacion de permisos
     //Funciones como exportar chat a mail serían a través de REST API
 
+    //Funcion para crear un chat, usada por el usuario
+    socket.on("createChat", async () => {
+      const newChatHistory = await Chat.create({});
+      const chatId = newChatHistory._id.toString();
+
+      socket.join(chatId);
+    });
+
     // Join a room
-    socket.on("joinChat", ({ username, chat }) => {
-      console.log(chat);
-      socket.join(chat);
-      console.log(`${username} joined room: ${chat}`);
-      // Broadcast to the room that a new user has joined
-      socket.to(chat).emit("message", `${username} has joined the chat`);
+    socket.on("joinChat", async (chat) => {
+      try {
+        if (!isValidObjectId(chat)) {
+          //ChatId is not a Mongo object Id, it doesnt exist
+          socket.emit("message", "Not a valid room id for chatID: " + chat);
+          return;
+        }
+        const isInChat = socket.rooms.has(chat);
+
+        if (!isInChat) {
+          socket.join(chat);
+
+          // Broadcast to the room that a new user has joined
+          io.to(chat).emit("message", `User has joined the chat`);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     // Handle sending messages to a room
-    socket.on("chatMessage", (messageObject) => {
-      const { body, from, chat } = messageObject;
-      if (chat) {
-        io.to(chat).emit("message", `${from}: ${body}`);
+    socket.on("chatMessage", async (messageObject) => {
+      try {
+        const { body, from, chatId } = messageObject;
+        if (!isValidObjectId(chatId)) {
+          //ChatId is not a Mongo object Id, it doesnt exist
+          return;
+        }
+        const newMessage = {
+          from: from,
+          body: body,
+        };
+        const updatedChat = await Chat.findOneAndUpdate(
+          { _id: chatId }, // Find the chat document by its ObjectId
+          { $push: { messages: newMessage } }, // Push the new message into the messages array
+          { new: true, useFindAndModify: false } // Return the updated document after the update
+        );
+
+        if (updatedChat) {
+          io.to(chatId).emit("message", `${from}: ${body}`);
+        }
+      } catch (error) {
+        console.log(error);
       }
-      console.log(messageObject);
     });
 
     // Handle user disconnection
