@@ -1,5 +1,6 @@
 import express from "express";
 import { Chat } from "../Models/chatModel.js";
+import { Claim } from "../Models/claimModel.js";
 
 const router = express.Router();
 
@@ -8,20 +9,14 @@ const router = express.Router();
 //TODO: Agregar hacer catch de errores
 //TODO: Mejores mensajes de errores
 
-router.post("/", async (req, res) => {
-  const newChat = {
-    date: req.body.date,
-    title: req.body.title,
-    messages: req.body.messages,
-  };
-
-  const chat = await Chat.create(newChat);
-  return res.status(200).send(chat);
-});
-
 router.get("/:chatId", async (req, res) => {
   const foundChat = await Chat.findOne({ _id: req.params.chatId });
   return res.status(200).send(foundChat);
+});
+
+router.post("/claim", async (req, res) => {
+  const createdClaim = await Claim.create({});
+  return res.status(200).send(createdClaim);
 });
 
 router.put("/:chatId", async (req, res) => {
