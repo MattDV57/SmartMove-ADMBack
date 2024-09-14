@@ -9,6 +9,7 @@ import { dirname, join } from "path";
 import http from "http";
 
 import chatRoutes from "./Routes/chatRoutes.js";
+import claimRoutes from "./Routes/claimRoutes.js";
 import socketHandler from "./Sockets/socketHandler.js";
 
 const app = express();
@@ -28,6 +29,7 @@ const io = new Server(server); // Initialize Socket.IO server
 
 //Definicion base de las rutas
 app.use("/chat", chatRoutes);
+app.use("/claim", claimRoutes);
 
 // Listen for connections
 socketHandler(io);
