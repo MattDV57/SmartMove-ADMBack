@@ -1,25 +1,14 @@
 import express from "express";
 import { Claim } from "../Models/claimModel.js";
-import { checkIfNumberAndPositive } from "../utils/validationChecks.js";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    let page = parseInt(req.query.page);
-    let limitPerPage = parseInt(req.query.limit);
+    let page = parseInt(req.query.page) || 1;
+    let limitPerPage = parseInt(req.query.limit) || 10;
 
-    console.log(page, limitPerPage);
-
-    if (!checkIfNumberAndPositive(page)) {
-      page = 1;
-    }
-
-    if (!checkIfNumberAndPositive(limitPerPage)) {
-      limitPerPage = 10;
-    }
-
-    const skip = (page - 10) * limitPerPage;
+    const skip = (page - 1) * limitPerPage;
 
     const foundClaimsPaginated = await Claim.aggregate([
       { $match: {} },
@@ -36,6 +25,22 @@ router.get("/", async (req, res) => {
 
 router.get("/:status", async (req, res) => {
   try {
+    let page = parseInt(req.query.page) || 1;
+    let limitPerPage = parseInt(req.query.limit) || 10;
+
+    console.log(page, limitPerPage);
+
+    const skip = (page - 1) * limitPerPage;
+
+    const status = req.params.status;
+
+    const foundClaimsPaginated = await Claim.aggregate([
+      { $match: { status: status } },
+      { $skip: skip },
+      { $limit: limitPerPage },
+    ]);
+
+    return res.status(200).send(foundClaimsPaginated);
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
