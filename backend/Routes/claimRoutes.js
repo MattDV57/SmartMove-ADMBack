@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
     return res.status(200).send(createdClaim);
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ message: error.errors });
+    return res.status(500).send({ error: error.errors });
   }
 });
 
@@ -69,6 +69,26 @@ router.put("/:claimId/status", async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
+  }
+});
+
+router.put("/:claimId/action", async (req, res) => {
+  try {
+    const actionToPush = req.body.action;
+    const updatedClaim = await Claim.findOneAndUpdate(
+      { _id: req.params.claimId },
+      { $push: { actionHistory: { action: actionToPush } } },
+      { new: true }
+    );
+
+    if (!updatedClaim) {
+      return res.status(404).send("Claim not found");
+    }
+
+    return res.status(200).send(updatedClaim);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.errors });
   }
 });
 
