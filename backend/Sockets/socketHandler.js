@@ -32,6 +32,7 @@ const socketHandler = (io) => {
           socket.emit("message", "Not a valid room id for chatID: " + chat);
           return;
         }
+
         const isInChat = socket.rooms.has(chat);
 
         if (!isInChat) {
