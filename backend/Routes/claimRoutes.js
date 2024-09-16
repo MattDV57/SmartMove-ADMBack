@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
       limitPerPage = 10;
     }
 
-    const skip = (page - 1) * limitPerPage;
+    const skip = (page - 10) * limitPerPage;
 
     const foundClaimsPaginated = await Claim.aggregate([
       { $match: {} },
@@ -30,7 +30,15 @@ router.get("/", async (req, res) => {
     return res.status(200).send(foundClaimsPaginated);
   } catch (error) {
     console.log(error);
-    return res.status(500).send(error);
+    return res.status(500).send({ message: "Error on server side" });
+  }
+});
+
+router.get("/:status", async (req, res) => {
+  try {
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: "Error on server side" });
   }
 });
 
@@ -40,7 +48,7 @@ router.post("/", async (req, res) => {
     return res.status(200).send(createdClaim);
   } catch (error) {
     console.log(error);
-    return res.status(500).send(error);
+    return res.status(500).send({ message: "Error on server side" });
   }
 });
 
@@ -61,6 +69,7 @@ router.put("/:claimId", async (req, res) => {
     return res.status(200).send(updatedClaim);
   } catch (error) {
     console.log(error);
+    return res.status(500).send({ message: "Error on server side" });
   }
 });
 
@@ -78,6 +87,7 @@ router.put("/:claimId/status", async (req, res) => {
     return res.status(200).send(updatedClaim);
   } catch (error) {
     console.log(error);
+    return res.status(500).send({ message: "Error on server side" });
   }
 });
 
