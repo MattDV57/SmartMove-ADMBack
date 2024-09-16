@@ -3,12 +3,40 @@ import { Claim } from "../Models/claimModel.js";
 
 const router = express.Router();
 
+const checkIfNumberAndPositive = (number) => {
+  if (!Number.isInteger(number) || number <= 0) {
+    return false;
+  }
+  return true;
+};
+
 router.get("/", async (req, res) => {
   try {
-    const foundClaims = await Claim.find({});
-    return res.status(200).send(foundClaims);
+    let page = parseInt(req.query.page);
+    let limitPerPage = parseInt(req.query.limit);
+
+    console.log(page, limitPerPage);
+
+    if (!checkIfNumberAndPositive(page)) {
+      page = 1;
+    }
+
+    if (!checkIfNumberAndPositive(limitPerPage)) {
+      limitPerPage = 10;
+    }
+
+    const skip = (page - 1) * limitPerPage;
+
+    const foundClaimsPaginated = await Claim.aggregate([
+      { $match: {} },
+      { $skip: skip },
+      { $limit: limitPerPage },
+    ]);
+
+    return res.status(200).send(foundClaimsPaginated);
   } catch (error) {
     console.log(error);
+    return res.status(500).send(error);
   }
 });
 
