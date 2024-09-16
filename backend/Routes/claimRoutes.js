@@ -23,30 +23,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:status", async (req, res) => {
-  try {
-    let page = parseInt(req.query.page) || 1;
-    let limitPerPage = parseInt(req.query.limit) || 10;
-
-    console.log(page, limitPerPage);
-
-    const skip = (page - 1) * limitPerPage;
-
-    const status = req.params.status;
-
-    const foundClaimsPaginated = await Claim.aggregate([
-      { $match: { status: status } },
-      { $skip: skip },
-      { $limit: limitPerPage },
-    ]);
-
-    return res.status(200).send(foundClaimsPaginated);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ message: "Error on server side" });
-  }
-});
-
 router.post("/", async (req, res) => {
   try {
     const createdClaim = await Claim.create(req.body);
