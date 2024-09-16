@@ -1,14 +1,8 @@
 import express from "express";
 import { Claim } from "../Models/claimModel.js";
+import { checkIfNumberAndPositive } from "../utils/validationChecks.js";
 
 const router = express.Router();
-
-const checkIfNumberAndPositive = (number) => {
-  if (!Number.isInteger(number) || number <= 0) {
-    return false;
-  }
-  return true;
-};
 
 router.get("/", async (req, res) => {
   try {
