@@ -1,6 +1,5 @@
 import express from "express";
 import { Chat } from "../Models/chatModel.js";
-import { Claim } from "../Models/claimModel.js";
 
 const router = express.Router();
 
@@ -10,22 +9,32 @@ const router = express.Router();
 //TODO: Mejores mensajes de errores
 
 router.get("/:chatId", async (req, res) => {
-  const foundChat = await Chat.findOne({ _id: req.params.chatId });
-  return res.status(200).send(foundChat);
+  try {
+    const foundChat = await Chat.findOne({ _id: req.params.chatId });
+    return res.status(200).send(foundChat);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(error);
+  }
 });
 
 router.put("/:chatId", async (req, res) => {
-  const newMessage = {
-    from: "Otra persona",
-    body: "Este es un nuevo mensaje",
-  };
+  try {
+    const newMessage = {
+      from: "Otra persona",
+      body: "Este es un nuevo mensaje",
+    };
 
-  const updatedChat = await Chat.findOneAndUpdate(
-    { _id: req.params.chatId },
-    { $push: { messages: newMessage } },
-    { new: true }
-  );
-  return res.status(200).send(updatedChat);
+    const updatedChat = await Chat.findOneAndUpdate(
+      { _id: req.params.chatId },
+      { $push: { messages: newMessage } },
+      { new: true }
+    );
+    return res.status(200).send(updatedChat);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(error);
+  }
 });
 
 export default router;
