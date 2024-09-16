@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
     return res.status(200).send(createdClaim);
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ message: "Error on server side" });
+    return res.status(500).send({ message: error.errors });
   }
 });
 
