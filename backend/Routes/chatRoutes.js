@@ -19,23 +19,4 @@ router.get("/:chatId", authenticateToken, async (req, res) => {
   }
 });
 
-router.put("/:chatId", authenticateToken, async (req, res) => {
-  try {
-    const newMessage = {
-      from: "Otra persona",
-      body: "Este es un nuevo mensaje",
-    };
-
-    const updatedChat = await Chat.findOneAndUpdate(
-      { _id: req.params.chatId },
-      { $push: { messages: newMessage } },
-      { new: true }
-    );
-    return res.status(200).send(updatedChat);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send(error);
-  }
-});
-
 export default router;
