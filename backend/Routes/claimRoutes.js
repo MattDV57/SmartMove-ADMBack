@@ -1,9 +1,10 @@
 import express from "express";
 import { Claim } from "../Models/claimModel.js";
+import authenticateToken from "../utils/jwtChecker.js";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
     let limitPerPage = parseInt(req.query.limit) || 10;

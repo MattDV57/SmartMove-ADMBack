@@ -10,6 +10,7 @@ import http from "http";
 
 import chatRoutes from "./Routes/chatRoutes.js";
 import claimRoutes from "./Routes/claimRoutes.js";
+import loginRoutes from "./Routes/loginRoutes.js";
 import socketHandler from "./Sockets/socketHandler.js";
 
 const app = express();
@@ -30,12 +31,13 @@ const io = new Server(server); // Initialize Socket.IO server
 //Definicion base de las rutas
 app.use("/chat", chatRoutes);
 app.use("/claim", claimRoutes);
+app.use("/login", loginRoutes);
 
 // Listen for connections
 socketHandler(io);
 
 mongoose
-  .connect(process.env.mongoConnectionString)
+  .connect(process.env.MONGO_CONNECTION_STRING)
   .then(() => {
     server.listen(process.env.PORT, () => {
       console.log("App is running on port = " + process.env.PORT);
