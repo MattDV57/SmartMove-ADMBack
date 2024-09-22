@@ -36,7 +36,20 @@ const socketHandler = (io) => {
         const isInChat = socket.rooms.has(chat);
 
         if (!isInChat) {
+          const chatFound = await Chat.findById(chat);
+
           socket.join(chat);
+
+          //Test chat ID: 66f091b26118976325f929cd
+          if (
+            chatFound &&
+            chatFound.messages &&
+            chatFound.messages.length > 0
+          ) {
+            chatFound.messages.map((message) => {
+              socket.emit("message", `${message.from}: ${message.body}`);
+            });
+          }
 
           // Broadcast to the room that a new user has joined
           io.to(chat).emit("message", `User has joined the chat`);
