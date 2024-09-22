@@ -1,9 +1,10 @@
 import express from "express";
 import { Claim } from "../Models/claimModel.js";
+import authenticateToken from "../utils/jwtChecker.js";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
     let limitPerPage = parseInt(req.query.limit) || 10;
@@ -23,7 +24,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", authenticateToken, async (req, res) => {
   try {
     const createdClaim = await Claim.create(req.body);
     return res.status(200).send(createdClaim);
@@ -33,7 +34,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:claimId", async (req, res) => {
+router.put("/:claimId", authenticateToken, async (req, res) => {
   try {
     const updatedClaim = await Claim.findOneAndUpdate(
       {
@@ -54,7 +55,7 @@ router.put("/:claimId", async (req, res) => {
   }
 });
 
-router.put("/:claimId/status", async (req, res) => {
+router.put("/:claimId/status", authenticateToken, async (req, res) => {
   try {
     const updatedClaim = await Claim.findOneAndUpdate(
       { _id: req.params.claimId },
@@ -72,7 +73,7 @@ router.put("/:claimId/status", async (req, res) => {
   }
 });
 
-router.put("/:claimId/action", async (req, res) => {
+router.put("/:claimId/action", authenticateToken, async (req, res) => {
   try {
     const actionToPush = req.body.action;
     const updatedClaim = await Claim.findOneAndUpdate(
