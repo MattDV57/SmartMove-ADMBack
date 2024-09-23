@@ -3,8 +3,6 @@ import { isValidObjectId } from "mongoose";
 
 const socketHandler = (io) => {
   io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id);
-
     //TODO: Cliente - Crear Metodo "createRoom"
     //Deberia inicializar un Chat Model en Mongodb
     //Utilizar el id de este objeto como el id de la room
@@ -50,9 +48,6 @@ const socketHandler = (io) => {
               socket.emit("message", `${message.from}: ${message.body}`);
             });
           }
-
-          // Broadcast to the room that a new user has joined
-          io.to(chat).emit("message", `User has joined the chat`);
         }
       } catch (error) {
         console.log(error);
