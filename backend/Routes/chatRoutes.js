@@ -12,6 +12,15 @@ const router = express.Router();
 router.get("/:chatId", authenticateToken, async (req, res) => {
   try {
     const foundChat = await Chat.findOne({ _id: req.params.chatId });
+
+    if (!foundChat) {
+      return res.status(404).send({
+        message: "Chat not found",
+        chatId: req.params.chatId,
+        timestamp: new Date(),
+      });
+    }
+
     return res.status(200).send(foundChat);
   } catch (error) {
     console.log(error);
