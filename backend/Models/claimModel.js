@@ -8,6 +8,11 @@ const claimSchema = new mongoose.Schema({
     default: "Abierto",
     enum: ["Abierto", "En Proceso", "Resuelto", "Cerrado"],
   },
+  priority: {
+    type: String,
+    default: "Normal",
+    enum: ["Baja", "Normal", "Alta", "Urgente"],
+  },
   user: {
     username: { type: String },
     userId: { type: Number },

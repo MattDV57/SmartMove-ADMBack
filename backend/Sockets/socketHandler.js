@@ -18,6 +18,7 @@ const socketHandler = (io) => {
     socket.on("createChat", async () => {
       const newChatHistory = await Chat.create({});
       const chatId = newChatHistory._id.toString();
+      socket.emit("message", chatId);
 
       socket.join(chatId);
     });
@@ -66,6 +67,12 @@ const socketHandler = (io) => {
           from: from,
           body: body,
         };
+
+        const chat = await Chat.findById(chatId);
+        if (!chat || !chat.active) {
+          return;
+        }
+
         const updatedChat = await Chat.findOneAndUpdate(
           { _id: chatId }, // Find the chat document by its ObjectId
           { $push: { messages: newMessage } }, // Push the new message into the messages array
