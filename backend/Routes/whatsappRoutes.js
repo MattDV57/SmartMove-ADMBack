@@ -96,7 +96,9 @@ router.post("/webhook", async (req, res) => {
     if (body.object) {
       if (body.entry && body.entry[0] && body.entry[0].changes[0].value) {
         let bodyData = body.entry[0].changes[0].value;
+        console.log(bodyData);
         let phoneNumber = bodyData.messages[0].from;
+        console.log(phoneNumber);
         let message = bodyData.messages[0].text.body;
 
         console.log(message);
