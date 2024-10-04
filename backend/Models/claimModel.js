@@ -16,6 +16,7 @@ const claimSchema = new mongoose.Schema({
   user: {
     username: { type: String },
     userId: { type: Number },
+    userPhoneNumber: { type: Number },
   },
   subject: { type: String, default: "Queja" },
   description: { type: String },

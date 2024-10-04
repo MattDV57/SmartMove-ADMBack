@@ -27,7 +27,13 @@ router.get("/", authenticateToken, async (req, res) => {
 
 router.post("/", authenticateToken, async (req, res) => {
   try {
-    const createdClaim = await Claim.create(req.body);
+    const createdChat = await Chat.create({});
+    const createdChatId = createdChat._id.toString();
+
+    const requestBody = req.body;
+    requestBody.relatedChat = createdChatId;
+
+    const createdClaim = await Claim.create(requestBody);
     return res.status(200).send(createdClaim);
   } catch (error) {
     console.log(error);

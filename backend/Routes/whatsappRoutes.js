@@ -3,7 +3,12 @@ import "dotenv/config.js";
 import express from "express";
 import axios from "axios";
 
+import { Claim } from "../Models/claimModel.js";
+import { Chat } from "../Models/chatModel.js";
+
 const router = express.Router();
+
+const baseClaimBody = {};
 
 /*
 messaging_product: "whatsapp",
@@ -104,5 +109,37 @@ router.post("/webhook", async (req, res) => {
     return res.status(500).send({ message: "Error on server side" });
   }
 });
+
+const messageFlow = async (userMessage, userPhoneNumber) => {
+  //Realizar flujo de comunicacion
+  //1. Recibir mensaje con el comando "crear; reclamo; ayuda"
+  //1.1 Crear objeto Chat y un objeto Claim
+  //1.1.1 Asignar Chat al Claim
+  //2 Cada mensaje de ese numero se guarda en el chat
+  //3. Ir actualizando el reclamo con lo que dice en el chat? ("descripcion; category; subject")
+  //3.1 Obtener descripcion:
+};
+
+const findUserActiveClaim = async (userPhoneNumber) => {
+  try {
+    const foundClaim = await Claim.findOne({
+      "user.userPhoneNumber": userPhoneNumber,
+      status: { $ne: "Cerrado" },
+    });
+
+    console.log("FOUND CLAIM: ", foundClaim);
+
+    if (foundClaim) {
+      return foundClaim;
+    }
+
+    //Si no tiene un reclamo activo el numero de telefono asociado, crea uno
+    const createdClaim = await Claim.create({});
+    return createdClaim;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
 
 export default router;
