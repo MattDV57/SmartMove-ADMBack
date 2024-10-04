@@ -89,24 +89,19 @@ router.get("/webhook", async (req, res) => {
 
 router.post("/webhook", async (req, res) => {
   try {
-    let body = req.body;
+    let messagesBody = req.body.value.messages;
+    console.log(messagesBody);
+    if (messagesBody) {
+      let phoneNumber = messagesBody[0].from;
+      console.log(phoneNumber);
+      let message = messagesBody[0].text.body;
 
-    console.log(body.entry[0].changes[0].value);
-
-    if (body.object) {
-      if (body.entry && body.entry[0] && body.entry[0].changes[0].value) {
-        let bodyData = body.entry[0].changes[0].value;
-        console.log(bodyData);
-        let phoneNumber = bodyData.messages[0].from;
-        console.log(phoneNumber);
-        let message = bodyData.messages[0].text.body;
-
-        console.log(message);
-        console.log(phoneNumber);
-        await sendWhatsAppMessage(
-          "Acabas de decir: " + message + " y tu número es: " + phoneNumber
-        );
-      }
+      console.log(message);
+      console.log(phoneNumber);
+      await sendWhatsAppMessage(
+        "Acabas de decir: " + message + " y tu número es: " + phoneNumber,
+        phoneNumber
+      );
     }
     res.status(200).send();
   } catch (error) {
