@@ -11,6 +11,7 @@ import http from "http";
 import chatRoutes from "./Routes/chatRoutes.js";
 import claimRoutes from "./Routes/claimRoutes.js";
 import loginRoutes from "./Routes/loginRoutes.js";
+import whatsAppRoutes from "./Routes/whatsappRoutes.js";
 import socketHandler from "./Sockets/socketHandler.js";
 
 const app = express();
@@ -32,6 +33,7 @@ const io = new Server(server); // Initialize Socket.IO server
 app.use("/chat", chatRoutes);
 app.use("/claim", claimRoutes);
 app.use("/login", loginRoutes);
+app.use("/whatsapp", whatsAppRoutes);
 
 // Listen for connections
 socketHandler(io);
