@@ -63,7 +63,7 @@ router.post("/send-message", async (req, res) => {
 router.post("/webhook", async (req, res) => {
   try {
     console.log(req.body);
-    res.status(200);
+    res.status(200).send();
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
