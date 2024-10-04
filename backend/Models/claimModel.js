@@ -29,6 +29,7 @@ const claimSchema = new mongoose.Schema({
   ],
   resolutionDate: { type: Date },
   resolution: { type: String },
+  relatedChat: { type: String },
 });
 
 claimSchema.plugin(mongooseSequence(mongoose), { inc_field: "claimNumber" });

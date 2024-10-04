@@ -1,5 +1,6 @@
 import express from "express";
 import { Claim } from "../Models/claimModel.js";
+import { Chat } from "../Models/chatModel.js";
 import authenticateToken from "../utils/jwtChecker.js";
 
 const router = express.Router();
@@ -90,6 +91,40 @@ router.put("/:claimId/action", authenticateToken, async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.errors });
+  }
+});
+
+router.put("/:claimId/assign-chat", authenticateToken, async (req, res) => {
+  try {
+    const chatID = req.body.chatID;
+    const updatedClaim = await Claim.findOneAndUpdate(
+      { _id: req.params.claimId },
+      { relatedChat: chatID },
+      { new: true }
+    );
+
+    if (!updatedClaim) {
+      return res.status(404).send("Claim not found");
+    }
+
+    return res.status(200).send(updatedClaim);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: "Error on server side" });
+  }
+});
+
+router.get("/:claimId/chat", authenticateToken, async (req, res) => {
+  try {
+    const foundClaim = await Claim.findById(req.params.claimId);
+    if (!foundClaim) {
+      return res.status(404).send("Claim not found");
+    }
+    const foundChat = await Chat.findById(foundClaim.relatedChat);
+    return res.status(200).send(foundChat);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: "Error on server side" });
   }
 });
 
