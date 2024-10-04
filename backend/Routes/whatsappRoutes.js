@@ -54,10 +54,13 @@ const sendWhatsAppMessage = async (message, phone) => {
 
 router.post("/send-message", async (req, res) => {
   try {
-    const response = await sendWhatsAppMessage(
-      req.body.message,
-      req.body.phone
-    );
+    let phone = req.body.phone;
+    let newPhone = phone;
+    if (phone.startsWith("549")) {
+      newPhone = phone.replace(/^\d{3}/, "54");
+    }
+
+    const response = await sendWhatsAppMessage(req.body.message, newPhone);
 
     return res.status(200).send(response.data);
   } catch (error) {
@@ -90,14 +93,13 @@ router.get("/webhook", async (req, res) => {
 router.post("/webhook", async (req, res) => {
   try {
     const reqBody = req.body;
-    console.log("TOKEN: " + process.env.WHATSAPP_TOKEN);
-    console.log("OBJECT: " + reqBody);
+
     if (reqBody.object) {
-      console.log("ENTRIES " + reqBody.entry);
       if (reqBody.entry[0].changes[0].value) {
-        console.log("MESSAGES " + req.body.entry[0].changes[0].value.messages);
         let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
-        console.log(phoneNumber);
+        if (phoneNumber.startsWith("549")) {
+          phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
+        }
         let message = req.body.entry[0].changes[0].value.messages[0].text.body;
         await sendWhatsAppMessage(
           "Acabas de decir: " + message + " y tu número es: " + phoneNumber,
@@ -106,14 +108,12 @@ router.post("/webhook", async (req, res) => {
       }
     } else {
       let messagesBody = req.body.value.messages;
-      console.log(messagesBody);
       if (messagesBody) {
         let phoneNumber = messagesBody[0].from;
-        console.log(phoneNumber);
+        if (phoneNumber.startsWith("549")) {
+          phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
+        }
         let message = messagesBody[0].text.body;
-
-        console.log(message);
-        console.log(phoneNumber);
         await sendWhatsAppMessage(
           "Acabas de decir: " + message + " y tu número es: " + phoneNumber,
           phoneNumber
