@@ -90,10 +90,11 @@ router.get("/webhook", async (req, res) => {
 router.post("/webhook", async (req, res) => {
   try {
     if (req.body.object === "whatsapp_business_account") {
-      if (req.body.entry[0].changes[0].messages) {
-        let phoneNumber = req.body.entry[0].changes[0].messages[0].from;
+      if (req.body.entry[0].changes[0].value.messages) {
+        console.log(req.body.entry[0].changes[0]);
+        let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
         console.log(phoneNumber);
-        let message = req.body.entry[0].changes[0].messages[0].text.body;
+        let message = req.body.entry[0].changes[0].value.messages[0].text.body;
         await sendWhatsAppMessage(
           "Acabas de decir: " + message + " y tu número es: " + phoneNumber,
           phoneNumber
