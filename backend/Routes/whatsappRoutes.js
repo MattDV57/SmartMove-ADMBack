@@ -60,9 +60,37 @@ router.post("/send-message", async (req, res) => {
   }
 });
 
+router.get("/webhook", async (req, res) => {
+  let mode = req.query["hub.mode"];
+  let token = req.query["hub.verify_token"];
+  let challenge = req.query["hub.challenge"];
+
+  if (mode && token) {
+    if (mode === "subscribe" && token === process.env.WHATSAPP_VERIFY_TOKEN) {
+      console.log("WEBHOOK_VERIFIED");
+      res.status(200).send(challenge);
+    } else {
+      res.sendStatus(403);
+    }
+  }
+});
+
 router.post("/webhook", async (req, res) => {
   try {
-    console.log(req.body);
+    let body = req.body;
+
+    console.log(body.entry[0].changes[0].value);
+
+    if (body.object) {
+      if (body.entry && body.entry[0] && body.entry[0].changes[0].value) {
+        let bodyData = body.entry[0].changes[0].value;
+        let phoneNumber = bodyData.messages[0].from;
+        let message = bodyData.messages[0].text.body;
+
+        console.log(message);
+        console.log(phoneNumber);
+      }
+    }
     res.status(200).send();
   } catch (error) {
     console.log(error);
