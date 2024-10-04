@@ -65,6 +65,10 @@ router.get("/webhook", async (req, res) => {
   let token = req.query["hub.verify_token"];
   let challenge = req.query["hub.challenge"];
 
+  console.log("MODE: ", mode);
+  console.log("TOKEN: ", token);
+  console.log("CHALLENGE: ", challenge);
+
   if (mode && token) {
     if (mode === "subscribe" && token === process.env.WHATSAPP_VERIFY_TOKEN) {
       console.log("WEBHOOK_VERIFIED");
