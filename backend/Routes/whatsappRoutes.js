@@ -89,19 +89,31 @@ router.get("/webhook", async (req, res) => {
 
 router.post("/webhook", async (req, res) => {
   try {
-    let messagesBody = req.body.value.messages;
-    console.log(messagesBody);
-    if (messagesBody) {
-      let phoneNumber = messagesBody[0].from;
-      console.log(phoneNumber);
-      let message = messagesBody[0].text.body;
+    if (req.body.object === "whatsapp_business_account") {
+      if (req.body.entry[0].changes[0].messages) {
+        let phoneNumber = req.body.entry[0].changes[0].messages[0].from;
+        console.log(phoneNumber);
+        let message = req.body.entry[0].changes[0].messages[0].text.body;
+        await sendWhatsAppMessage(
+          "Acabas de decir: " + message + " y tu número es: " + phoneNumber,
+          phoneNumber
+        );
+      }
+    } else {
+      let messagesBody = req.body.value.messages;
+      console.log(messagesBody);
+      if (messagesBody) {
+        let phoneNumber = messagesBody[0].from;
+        console.log(phoneNumber);
+        let message = messagesBody[0].text.body;
 
-      console.log(message);
-      console.log(phoneNumber);
-      await sendWhatsAppMessage(
-        "Acabas de decir: " + message + " y tu número es: " + phoneNumber,
-        phoneNumber
-      );
+        console.log(message);
+        console.log(phoneNumber);
+        await sendWhatsAppMessage(
+          "Acabas de decir: " + message + " y tu número es: " + phoneNumber,
+          phoneNumber
+        );
+      }
     }
     res.status(200).send();
   } catch (error) {
