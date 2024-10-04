@@ -93,7 +93,7 @@ router.post("/webhook", async (req, res) => {
 
         console.log(message);
         console.log(phoneNumber);
-        sendWhatsAppMessage(
+        await sendWhatsAppMessage(
           "Acabas de decir: " + message + " y tu número es: " + phoneNumber
         );
       }
