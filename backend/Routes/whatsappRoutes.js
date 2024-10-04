@@ -89,10 +89,12 @@ router.get("/webhook", async (req, res) => {
 
 router.post("/webhook", async (req, res) => {
   try {
-    console.log(process.env.WHATSAPP_TOKEN);
-    console.log("OBJECT: " + req.body.object);
-    if (req.body.object) {
-      if (req.body.entry[0].changes[0].value.messages) {
+    const reqBody = req.body;
+    console.log("TOKEN: " + process.env.WHATSAPP_TOKEN);
+    console.log("OBJECT: " + reqBody);
+    if (reqBody.object) {
+      console.log("ENTRIES " + reqBody.entry);
+      if (reqBody.entry[0].changes[0].value) {
         console.log("MESSAGES " + req.body.entry[0].changes[0].value.messages);
         let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
         console.log(phoneNumber);
