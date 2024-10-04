@@ -23,7 +23,7 @@ messaging_product: "whatsapp",
       },
       */
 
-const sendWhatsAppMessage = async (message) => {
+const sendWhatsAppMessage = async (message, phone) => {
   try {
     const response = await axios({
       url: `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
@@ -35,7 +35,7 @@ const sendWhatsAppMessage = async (message) => {
       data: {
         messaging_product: "whatsapp",
         recipient_type: "individual",
-        to: "541136178420",
+        to: phone,
         type: "text",
         text: {
           preview_url: false,
@@ -54,7 +54,10 @@ const sendWhatsAppMessage = async (message) => {
 
 router.post("/send-message", async (req, res) => {
   try {
-    const response = await sendWhatsAppMessage(req.body.message);
+    const response = await sendWhatsAppMessage(
+      req.body.message,
+      req.body.phone
+    );
 
     return res.status(200).send(response.data);
   } catch (error) {
