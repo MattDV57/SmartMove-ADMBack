@@ -5,6 +5,17 @@ import authenticateToken from "../utils/jwtChecker.js";
 
 const router = express.Router();
 
+
+// Get my claims
+//TODO: /claim/operators/:userId
+
+// Get logs paginated
+//TODO: Object logs cuando se cierre o resuelva un reclamo y/o ABM de usuarios
+//TODO: /claim/logs?logType= ['users', 'claims']
+
+// Put operator in claim
+//TODO: /claim/:claimId/operators/:userId
+
 // Get all claims
 router.get("/", authenticateToken, async (req, res) => {
   try {
@@ -27,6 +38,7 @@ router.get("/", authenticateToken, async (req, res) => {
     return res.status(500).send({ message: "Error on server side" });
   }
 });
+
 
 // Get dashboard data
 router.get("/dashboard", authenticateToken, async (req, res) => {
@@ -114,43 +126,6 @@ router.put("/:claimId", authenticateToken, async (req, res) => {
   }
 });
 
-router.put("/:claimId/status", authenticateToken, async (req, res) => {
-  try {
-    const updatedClaim = await Claim.findOneAndUpdate(
-      { _id: req.params.claimId },
-      { status: req.body.status },
-      { new: true }
-    );
-
-    if (!updatedClaim) {
-      return res.status(404).send("Claim not found");
-    }
-    return res.status(200).send(updatedClaim);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ message: "Error on server side" });
-  }
-});
-
-router.put("/:claimId/action", authenticateToken, async (req, res) => {
-  try {
-    const actionToPush = req.body.action;
-    const updatedClaim = await Claim.findOneAndUpdate(
-      { _id: req.params.claimId },
-      { $push: { actionHistory: { action: actionToPush } } },
-      { new: true }
-    );
-
-    if (!updatedClaim) {
-      return res.status(404).send("Claim not found");
-    }
-
-    return res.status(200).send(updatedClaim);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ error: error.errors });
-  }
-});
 
 router.put("/:claimId/assign-chat", authenticateToken, async (req, res) => {
   try {
