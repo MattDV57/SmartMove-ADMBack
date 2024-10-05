@@ -45,8 +45,6 @@ const sendWhatsAppMessage = async (message, phone) => {
     });
     return response;
   } catch (error) {
-    console.log("ERROR HAPPENED");
-    console.log("EEROR TIME: ", new Date());
     console.log(error);
     return error;
   }
@@ -64,8 +62,6 @@ router.post("/send-message", async (req, res) => {
 
     return res.status(200).send(response.data);
   } catch (error) {
-    console.log("ERROR HAPPENED");
-    console.log("EEROR TIME: ", new Date());
     console.log(error);
     return res.status(500).send(error);
   }
@@ -128,7 +124,7 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
   try {
     const foundClaim = await findUserActiveClaim(userPhoneNumber);
 
-    //Caso 1: El reclamo es nuevo
+    //Caso 1: El consulta es nuevo
     if (!foundClaim.description) {
       foundClaim.description = userMessage;
       const updatedClaim = await Claim.findOneAndUpdate(
@@ -137,11 +133,10 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
         { new: true }
       );
 
-      console.log("Updated CLAIM: ", updatedClaim);
-      return "Buenos días, hemos recibido tu mensaje. Por favor, cuentanos en detalle tu reclamo para poder ayudarte mejor.";
+      return "Buenos días, hemos recibido tu mensaje. Por favor, cuentanos en detalle tu consulta para poder ayudarte mejor.";
     }
 
-    //Caso 2: Ya tenemos la descripcion del reclamo
+    //Caso 2: Ya tenemos la descripcion del consulta
     if (foundClaim.description) {
       const userMessageBody = {
         from: userPhoneNumber,
@@ -153,16 +148,16 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
         { $push: { messages: userMessageBody } }, // Push the new message into the messages array
         { new: true, useFindAndModify: false } // Return the updated document after the update
       );
-      return "Gracias por tu mensaje. Estamos trabajando en tu reclamo. Por favor, si tienes más información para agregar, escríbenos.";
+      return "Gracias por tu mensaje. Estamos trabajando en tu consulta. Por favor, si tienes más información para agregar, escríbenos.";
     }
 
     return "Actualmente no podemos procesar tu mensaje, por favor intenta más tarde";
     //Realizar flujo de comunicacion
-    //1. Recibir mensaje con el comando "crear; reclamo; ayuda"
+    //1. Recibir mensaje con el comando "crear; consulta; ayuda"
     //1.1 Crear objeto Chat y un objeto Claim
     //1.1.1 Asignar Chat al Claim
     //2 Cada mensaje de ese numero se guarda en el chat
-    //3. Ir actualizando el reclamo con lo que dice en el chat? ("descripcion; category; subject")
+    //3. Ir actualizando el consulta con lo que dice en el chat? ("descripcion; category; subject")
     //3.1 Obtener descripcion:
   } catch (error) {
     console.log(error);
@@ -177,13 +172,11 @@ const findUserActiveClaim = async (userPhoneNumber) => {
       status: { $ne: "Cerrado" },
     });
 
-    console.log("FOUND CLAIM: ", foundClaim);
-
     if (foundClaim) {
       return foundClaim;
     }
 
-    //Si no tiene un reclamo activo el numero de telefono asociado, crea uno
+    //Si no tiene un consulta activo el numero de telefono asociado, crea uno
 
     const createdChat = await Chat.create({});
     const createdChatId = createdChat._id.toString();
