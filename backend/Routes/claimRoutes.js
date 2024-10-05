@@ -5,20 +5,78 @@ import authenticateToken from "../utils/jwtChecker.js";
 
 const router = express.Router();
 
+// Get all claims
 router.get("/", authenticateToken, async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
     let limitPerPage = parseInt(req.query.limit) || 10;
-
     const skip = (page - 1) * limitPerPage;
 
+    const caseType = req.query.caseType || "Reclamo"
+
     const foundClaimsPaginated = await Claim.aggregate([
-      { $match: {} },
+      { $match: { caseType } },
+      { $sort: { timestamp: -1 } },
       { $skip: skip },
       { $limit: limitPerPage },
     ]);
 
     return res.status(200).send(foundClaimsPaginated);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: "Error on server side" });
+  }
+});
+
+// Get dashboard data
+router.get("/dashboard", authenticateToken, async (req, res) => {
+  try {
+
+    const today = new Date();
+    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 1));
+    startOfWeek.setHours(0, 0, 0, 0); 
+
+    const newMediationsThisWeek = await Claim.countDocuments({
+      caseType: "Mediacion",
+      timestamp: { $gte: startOfWeek },
+    });
+
+    const newClaimsThisWeek = await Claim.countDocuments({
+      caseType: "Reclamo",
+      timestamp: { $gte: startOfWeek },
+    });
+
+
+    const claimsInProgress = await Claim.countDocuments({
+      caseType: "Reclamo",
+      status: "En Proceso",
+    });
+
+
+    const mediationsInProgress = await Claim.countDocuments({
+      caseType: "Mediacion",
+      status: "En Proceso",
+    });
+
+
+    const claimsByCategory = await Claim.aggregate([
+      { $match: { caseType: "Reclamo" } },
+      {
+        $group: {
+          _id: "$category",
+          count: { $sum: 1 }, 
+        },
+      },
+      { $sort: { count: -1 } }, 
+    ]);
+
+    return res.status(200).send({
+      newMediationsThisWeek,
+      newClaimsThisWeek,
+      claimsInProgress,
+      mediationsInProgress,
+      claimsByCategory,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
