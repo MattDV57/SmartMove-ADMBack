@@ -133,7 +133,7 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
         { new: true }
       );
 
-      return "Buenos días, hemos recibido tu mensaje. Por favor, cuentanos en detalle tu consulta para poder ayudarte mejor.";
+      return "Bienvenido a SmartMove! 😊\nPor favor, escribinos tu consulta y te responderemos a la brevedad.";
     }
 
     //Caso 2: Ya tenemos la descripcion del consulta
@@ -148,6 +148,7 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
         { $push: { messages: userMessageBody } }, // Push the new message into the messages array
         { new: true, useFindAndModify: false } // Return the updated document after the update
       );
+
       return "Gracias por tu mensaje. Estamos trabajando en tu consulta. Por favor, si tienes más información para agregar, escríbenos.";
     }
 
