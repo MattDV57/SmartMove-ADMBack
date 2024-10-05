@@ -25,6 +25,10 @@ router.get("/", authenticateToken, async (req, res) => {
 
     const caseType = req.query.caseType || "Reclamo"
 
+    // Necessary for pagination in DataGrid, 2x(ms) with this
+    const totalClaims = await Claim.countDocuments({ caseType });
+    const totalPages = Math.ceil(totalClaims / limitPerPage);
+
     const foundClaimsPaginated = await Claim.aggregate([
       { $match: { caseType } },
       { $sort: { timestamp: -1 } },
@@ -32,7 +36,7 @@ router.get("/", authenticateToken, async (req, res) => {
       { $limit: limitPerPage },
     ]);
 
-    return res.status(200).send(foundClaimsPaginated);
+    return res.status(200).send({foundClaimsPaginated, totalPages});
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
