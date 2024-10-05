@@ -11,12 +11,21 @@ const claimSchema = new mongoose.Schema({
   priority: {
     type: String,
     default: "Normal",
-    enum: ["Baja", "Normal", "Alta", "Urgente"],
+    enum: ["Consulta", "Normal", "Alta", "Urgente"],
   },
   user: {
     username: { type: String },
     userId: { type: Number },
     userPhoneNumber: { type: Number },
+  },
+  counterParty: {
+    username: { type: String },
+    userId: { type: Number },
+  },
+  caseType: {
+    type: String,
+    default: "Reclamo",
+    enum: ["Reclamo", "Mediacion"],
   },
   subject: { type: String, default: "Queja" },
   description: { type: String },
