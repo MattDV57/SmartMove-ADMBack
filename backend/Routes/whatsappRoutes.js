@@ -101,10 +101,8 @@ router.post("/webhook", async (req, res) => {
           phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
         }
         let message = req.body.entry[0].changes[0].value.messages[0].text.body;
-        await sendWhatsAppMessage(
-          "Acabas de decir: " + message + " y tu número es: " + phoneNumber,
-          phoneNumber
-        );
+        const messageToSend = await messageFlow(message, phoneNumber);
+        await sendWhatsAppMessage(messageToSend, phoneNumber);
       }
     } else {
       let messagesBody = req.body.value.messages;
@@ -114,10 +112,9 @@ router.post("/webhook", async (req, res) => {
           phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
         }
         let message = messagesBody[0].text.body;
-        await sendWhatsAppMessage(
-          "Acabas de decir: " + message + " y tu número es: " + phoneNumber,
-          phoneNumber
-        );
+
+        const messageToSend = await messageFlow(message, phoneNumber);
+        await sendWhatsAppMessage(messageToSend, phoneNumber);
       }
     }
     res.status(200).send();
@@ -128,13 +125,49 @@ router.post("/webhook", async (req, res) => {
 });
 
 const messageFlow = async (userMessage, userPhoneNumber) => {
-  //Realizar flujo de comunicacion
-  //1. Recibir mensaje con el comando "crear; reclamo; ayuda"
-  //1.1 Crear objeto Chat y un objeto Claim
-  //1.1.1 Asignar Chat al Claim
-  //2 Cada mensaje de ese numero se guarda en el chat
-  //3. Ir actualizando el reclamo con lo que dice en el chat? ("descripcion; category; subject")
-  //3.1 Obtener descripcion:
+  try {
+    const foundClaim = await findUserActiveClaim(userPhoneNumber);
+
+    //Caso 1: El reclamo es nuevo
+    if (!foundClaim.description) {
+      foundClaim.description = userMessage;
+      const updatedClaim = await Claim.findOneAndUpdate(
+        { _id: foundClaim._id },
+        { description: userMessage },
+        { new: true }
+      );
+
+      console.log("Updated CLAIM: ", updatedClaim);
+      return "Buenos días, hemos recibido tu mensaje. Por favor, cuentanos en detalle tu reclamo para poder ayudarte mejor.";
+    }
+
+    //Caso 2: Ya tenemos la descripcion del reclamo
+    if (foundClaim.description) {
+      const userMessageBody = {
+        from: userPhoneNumber,
+        body: userMessage,
+      };
+
+      const updatedChat = await Chat.findOneAndUpdate(
+        { _id: foundClaim.relatedChat }, // Find the chat document by its ObjectId
+        { $push: { messages: userMessageBody } }, // Push the new message into the messages array
+        { new: true, useFindAndModify: false } // Return the updated document after the update
+      );
+      return "Gracias por tu mensaje. Estamos trabajando en tu reclamo. Por favor, si tienes más información para agregar, escríbenos.";
+    }
+
+    return "Actualmente no podemos procesar tu mensaje, por favor intenta más tarde";
+    //Realizar flujo de comunicacion
+    //1. Recibir mensaje con el comando "crear; reclamo; ayuda"
+    //1.1 Crear objeto Chat y un objeto Claim
+    //1.1.1 Asignar Chat al Claim
+    //2 Cada mensaje de ese numero se guarda en el chat
+    //3. Ir actualizando el reclamo con lo que dice en el chat? ("descripcion; category; subject")
+    //3.1 Obtener descripcion:
+  } catch (error) {
+    console.log(error);
+    return "Actualmente no podemos procesar tu mensaje, por favor intenta más tarde";
+  }
 };
 
 const findUserActiveClaim = async (userPhoneNumber) => {
@@ -151,7 +184,15 @@ const findUserActiveClaim = async (userPhoneNumber) => {
     }
 
     //Si no tiene un reclamo activo el numero de telefono asociado, crea uno
-    const createdClaim = await Claim.create({});
+
+    const createdChat = await Chat.create({});
+    const createdChatId = createdChat._id.toString();
+
+    const createdClaim = await Claim.create({
+      subject: "Consulta",
+      "user.userPhoneNumber": userPhoneNumber,
+      relatedChat: createdChatId,
+    });
     return createdClaim;
   } catch (error) {
     console.log(error);
