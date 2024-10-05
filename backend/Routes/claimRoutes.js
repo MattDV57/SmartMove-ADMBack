@@ -19,29 +19,60 @@ const router = express.Router();
 // Get all claims
 router.get("/", authenticateToken, async (req, res) => {
   try {
-    let page = parseInt(req.query.page) || 1;
-    let limitPerPage = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limitPerPage;
+    const {foundClaimsPaginated, totalClaims} = await getPaginatedClaims(req);
 
-    const caseType = req.query.caseType || "Reclamo"
-
-    // Necessary for pagination in DataGrid, 2x(ms) with this
-    const totalClaims = await Claim.countDocuments({ caseType });
-    const totalPages = Math.ceil(totalClaims / limitPerPage);
-
-    const foundClaimsPaginated = await Claim.aggregate([
-      { $match: { caseType } },
-      { $sort: { timestamp: -1 } },
-      { $skip: skip },
-      { $limit: limitPerPage },
-    ]);
-
-    return res.status(200).send({foundClaimsPaginated, totalPages});
+    return res.status(200).send({foundClaimsPaginated, totalClaims});
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
   }
 });
+
+
+// Get my claims
+router.get("/operators/:assignedOperator", authenticateToken, async (req, res) => {
+  try {
+    const {foundClaimsPaginated, totalClaims} = await getPaginatedClaims(
+      req, {assignedOperator: req.params.assignedOperator});
+
+    return res.status(200).send({foundClaimsPaginated, totalClaims});
+  }
+  catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: "Error on server side" });
+  }
+});
+
+
+const getPaginatedClaims = async (req, filter = {}) => {
+  try {
+    let page = parseInt(req.query.page) || 1;
+    let limitPerPage = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limitPerPage;
+    const caseType = req.query.caseType || "Reclamo"
+
+    // Necessary for pagination in DataGrid, 2x(ms) with this
+    const totalClaims = await Claim.countDocuments({ caseType, assignedOperator: req.params.assignedOperator });
+
+    const foundClaimsPaginated = await Claim.aggregate([
+      { $match: { caseType, ...filter} },
+      { $sort: { timestamp: -1 } },
+      { $skip: skip },
+      { $limit: limitPerPage },
+    ]);
+
+    return {foundClaimsPaginated, totalClaims};
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
+
+
+
 
 
 // Get dashboard data
