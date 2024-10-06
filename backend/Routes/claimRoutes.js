@@ -113,12 +113,24 @@ router.get("/dashboard", authenticateToken, async (req, res) => {
       { $sort: { count: -1 } },
     ]);
 
+    const arbitrationsByCategory = await Claim.aggregate([
+      { $match: { caseType: "Mediacion" } },
+      {
+        $group: {
+          _id: "$category",
+          count: { $sum: 1 }, 
+        },
+      },
+      { $sort: { count: -1 } }, 
+    ]);
+
     return res.status(200).send({
       newMediationsThisWeek,
       newClaimsThisWeek,
       claimsInProgress,
       mediationsInProgress,
       claimsByCategory,
+      arbitrationsByCategory
     });
   } catch (error) {
     console.log(error);
