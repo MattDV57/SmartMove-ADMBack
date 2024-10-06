@@ -1,10 +1,10 @@
 import express from "express";
 import { Claim } from "../Models/claimModel.js";
 import { Chat } from "../Models/chatModel.js";
+import logAction from "../utils/logger.js";
 import authenticateToken from "../utils/jwtChecker.js";
 
 const router = express.Router();
-
 
 // Get my claims
 //TODO: /claim/operators/:userId
@@ -19,69 +19,68 @@ const router = express.Router();
 // Get all claims
 router.get("/", authenticateToken, async (req, res) => {
   try {
-    const {foundClaimsPaginated, totalClaims} = await getPaginatedClaims(req);
+    const { foundClaimsPaginated, totalClaims } = await getPaginatedClaims(req);
 
-    return res.status(200).send({foundClaimsPaginated, totalClaims});
+    return res.status(200).send({ foundClaimsPaginated, totalClaims });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
   }
 });
 
-
 // Get my claims
-router.get("/operators/:assignedOperator", authenticateToken, async (req, res) => {
-  try {
-    const {foundClaimsPaginated, totalClaims} = await getPaginatedClaims(
-      req, {assignedOperator: req.params.assignedOperator});
+router.get(
+  "/operators/:assignedOperator",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { foundClaimsPaginated, totalClaims } = await getPaginatedClaims(
+        req,
+        { assignedOperator: req.params.assignedOperator }
+      );
 
-    return res.status(200).send({foundClaimsPaginated, totalClaims});
+      return res.status(200).send({ foundClaimsPaginated, totalClaims });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ message: "Error on server side" });
+    }
   }
-  catch (error) {
-    console.log(error);
-    return res.status(500).send({ message: "Error on server side" });
-  }
-});
-
+);
 
 const getPaginatedClaims = async (req, filter = {}) => {
   try {
     let page = parseInt(req.query.page) || 1;
     let limitPerPage = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limitPerPage;
-    const caseType = req.query.caseType || "Reclamo"
+    const caseType = req.query.caseType || "Reclamo";
 
     // Necessary for pagination in DataGrid, 2x(ms) with this
-    const totalClaims = await Claim.countDocuments({ caseType, assignedOperator: req.params.assignedOperator });
+    const totalClaims = await Claim.countDocuments({
+      caseType,
+      assignedOperator: req.params.assignedOperator,
+    });
 
     const foundClaimsPaginated = await Claim.aggregate([
-      { $match: { caseType, ...filter} },
+      { $match: { caseType, ...filter } },
       { $sort: { timestamp: -1 } },
       { $skip: skip },
       { $limit: limitPerPage },
     ]);
 
-    return {foundClaimsPaginated, totalClaims};
-
+    return { foundClaimsPaginated, totalClaims };
   } catch (error) {
     throw error;
   }
-}
-
-
-
-
-
-
-
+};
 
 // Get dashboard data
 router.get("/dashboard", authenticateToken, async (req, res) => {
   try {
-
     const today = new Date();
-    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 1));
-    startOfWeek.setHours(0, 0, 0, 0); 
+    const startOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay() + 1)
+    );
+    startOfWeek.setHours(0, 0, 0, 0);
 
     const newMediationsThisWeek = await Claim.countDocuments({
       caseType: "Mediacion",
@@ -93,28 +92,25 @@ router.get("/dashboard", authenticateToken, async (req, res) => {
       timestamp: { $gte: startOfWeek },
     });
 
-
     const claimsInProgress = await Claim.countDocuments({
       caseType: "Reclamo",
       status: "En Proceso",
     });
-
 
     const mediationsInProgress = await Claim.countDocuments({
       caseType: "Mediacion",
       status: "En Proceso",
     });
 
-
     const claimsByCategory = await Claim.aggregate([
       { $match: { caseType: "Reclamo" } },
       {
         $group: {
           _id: "$category",
-          count: { $sum: 1 }, 
+          count: { $sum: 1 },
         },
       },
-      { $sort: { count: -1 } }, 
+      { $sort: { count: -1 } },
     ]);
 
     return res.status(200).send({
@@ -157,8 +153,21 @@ router.put("/:claimId", authenticateToken, async (req, res) => {
     );
 
     if (!updatedClaim) {
+      await logAction(
+        req.params.claimId,
+        "Tried updating a claim",
+        "Claim with id: " + req.params.claimId + " was not found",
+        req.user
+      );
       return res.status(404).send("Claim not found");
     }
+
+    await logAction(
+      req.params.claimId,
+      "Updated claim",
+      "Updated following fields: " + Object.keys(req.body).toString(),
+      req.body.user || "Unnamed operator"
+    );
 
     return res.status(200).send(updatedClaim);
   } catch (error) {
@@ -166,7 +175,6 @@ router.put("/:claimId", authenticateToken, async (req, res) => {
     return res.status(500).send({ message: "Error on server side" });
   }
 });
-
 
 router.put("/:claimId/assign-chat", authenticateToken, async (req, res) => {
   try {
