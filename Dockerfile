@@ -15,7 +15,7 @@ RUN npm install
 COPY --chown=node:node . .
 
 # Set environment variables (replace with your actual values)
-ENV DATABASE_URL="mongodb+srv://SmartMove:awlJ4sZ1PEyBwp6F@adminterna.jxwqb.mongodb.net/AdminInterna?retryWrites=true&w=majority&appName=ADMInterna"
+#ENV DATABASE_URL="mongodb+srv://SmartMove:awlJ4sZ1PEyBwp6F@adminterna.jxwqb.mongodb.net/AdminInterna?retryWrites=true&w=majority&appName=ADMInterna"
 
 # Expose the application port (adjust if necessary)
 EXPOSE 3000
