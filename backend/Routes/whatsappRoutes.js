@@ -137,7 +137,17 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
     }
 
     //Caso 3: Cerrar reclamo
-    if (userMessage.toLowerCase().includes("cerrar reclamo")) {
+    if (
+      userMessage.toLowerCase().includes("cerrar reclamo") ||
+      userMessage.toLowerCase().includes("cerrar el reclamo") ||
+      userMessage.toLowerCase().includes("cerrar mi reclamo")
+    ) {
+      const updatedChat = await Chat.findOneAndUpdate(
+        { _id: foundClaim.relatedChat }, // Find the chat document by its ObjectId
+        { $push: { messages: userMessageBody } }, // Push the new message into the messages array
+        { new: true, useFindAndModify: false } // Return the updated document after the update
+      );
+
       const updatedClaim = await Claim.findOneAndUpdate(
         { _id: foundClaim._id },
         { status: "Cerrado" },
