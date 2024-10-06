@@ -136,6 +136,16 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
       return "Bienvenido a SmartMove! 😊\nPor favor, escribinos tu consulta y te responderemos a la brevedad.";
     }
 
+    //Caso 3: Cerrar reclamo
+    if (userMessage.toLowerCase().includes("cerrar reclamo")) {
+      const updatedClaim = await Claim.findOneAndUpdate(
+        { _id: foundClaim._id },
+        { status: "Cerrado" },
+        { new: true }
+      );
+      return "Tu consulta ha sido cerrada. Gracias por comunicarte con nosotros.";
+    }
+
     //Caso 2: Ya tenemos la descripcion del consulta
     if (foundClaim.description) {
       const userMessageBody = {
