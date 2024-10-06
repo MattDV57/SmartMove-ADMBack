@@ -1,4 +1,4 @@
-import "dotenv/config.js";
+import "dotenv/config";
 import express from "express";
 import { Log } from "../Models/logModel.js";
 

@@ -1,4 +1,4 @@
-import "dotenv/config.js";
+import "dotenv/config";
 import { Log } from "../Models/logModel.js";
 
 const logAction = async (claimId, action, details, user, perfomedBy) => {

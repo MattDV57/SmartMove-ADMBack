@@ -1,4 +1,4 @@
-import "dotenv/config.js";
+import "dotenv/config";
 import jsonwebtoken from "jsonwebtoken";
 
 export default function authenticateToken(req, res, next) {
