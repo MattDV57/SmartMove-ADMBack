@@ -25,5 +25,9 @@ jobs:
     - name: Run Docker container
       env:
             DATABASE_URL: ${{ secrets.MONGO_CONNECTION_STRING }}
-            AMBIENTE: ${{ secrets.Ambiente }} # here it is!
-      run: sudo docker run --env-file $Ambiente --env DATABASE_URL= ${{ secrets.MONGO_CONNECTION_STRING }} -d -p 8080:8080 --name smartmoveback-container mattdv57/smartmoveback
+            AMBIENTE: ${{ secrets.Ambiente }} 
+      run: |
+            sudo docker run -d -p 8080:8080 --name smartmoveback-container \
+            --env-file AMBIENTE= "${{ secrets.Ambiente }}"  \
+            --env DATABASE_URL= "${{ secrets.MONGO_CONNECTION_STRING }}" \ 
+             mattdv57/smartmoveback
