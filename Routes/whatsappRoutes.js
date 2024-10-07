@@ -142,6 +142,11 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
       userMessage.toLowerCase().includes("cerrar la consulta") ||
       userMessage.toLowerCase().includes("cerrar mi consulta")
     ) {
+      const userMessageBody = {
+        from: userPhoneNumber,
+        body: userMessage,
+      };
+
       const updatedChat = await Chat.findOneAndUpdate(
         { _id: foundClaim.relatedChat }, // Find the chat document by its ObjectId
         { $push: { messages: userMessageBody } }, // Push the new message into the messages array
