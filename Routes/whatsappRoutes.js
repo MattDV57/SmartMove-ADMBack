@@ -136,11 +136,11 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
       return "Bienvenido a SmartMove! 😊\nPor favor, escribinos tu consulta y te responderemos a la brevedad.";
     }
 
-    //Caso 3: Cerrar reclamo
+    //Caso 3: Cerrar consulta
     if (
-      userMessage.toLowerCase().includes("cerrar reclamo") ||
-      userMessage.toLowerCase().includes("cerrar el reclamo") ||
-      userMessage.toLowerCase().includes("cerrar mi reclamo")
+      userMessage.toLowerCase().includes("cerrar consulta") ||
+      userMessage.toLowerCase().includes("cerrar la consulta") ||
+      userMessage.toLowerCase().includes("cerrar mi consulta")
     ) {
       const updatedChat = await Chat.findOneAndUpdate(
         { _id: foundClaim.relatedChat }, // Find the chat document by its ObjectId
