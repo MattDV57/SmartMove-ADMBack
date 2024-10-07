@@ -172,7 +172,7 @@ router.put("/:claimId", authenticateToken, async (req, res) => {
         req.params.claimId,
         updatedClaim.status,
         updatedClaim.caseType + " " + updatedClaim.status,
-        req.body.user || "Soporte",
+        req.body.user.username || "Soporte",
         "Soporte" // admin solo haria CRUD de user, no participa de reclamos
       );
     }

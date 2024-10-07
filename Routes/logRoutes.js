@@ -8,13 +8,8 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
 
-    const { performedBy, search, page = 1, limit = 10 } = req.query;
+    const { performedBy = "Soporte", search= "", page = 1, limit = 10 } = req.query;
     const filter = {};
-
-
-    if (performedBy) {
-      filter.performedBy = performedBy; 
-    }
 
 
     if (search) {
@@ -27,19 +22,16 @@ router.get("/", async (req, res) => {
     }
 
     const pageNumber = parseInt(page) || 1;
-    const pageSize = parseInt(limit) || 10;
-    const skip = (pageNumber - 1) * pageSize;
-
-    const foundLogs = await Log.find(filter)
-      .sort({ timestamp: -1 })
-      .skip(skip)
-      .limit(pageSize); 
-
-
-    const totalLogs = await Log.countDocuments(filter);
+    const limitPerPage = parseInt(limit) || 10;
+    const skip = (pageNumber - 1) * limit;
+    const foundLogs = await Log.aggregate([
+      { $match: {  performedBy  } },
+      { $sort: { timestamp: -1 } },
+      { $skip: skip },
+      { $limit: limitPerPage },
+    ])
 
     return res.status(200).json({
-      totalLogs,
       currentPage: pageNumber,
       logs: foundLogs,
     });
