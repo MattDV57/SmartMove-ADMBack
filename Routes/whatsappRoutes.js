@@ -129,7 +129,7 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
     const { foundClaim, event } = await findUserActiveClaim(userPhoneNumber);
 
     //Caso 1: El consulta es nuevo
-    if (!foundClaim.description && event === "new claim") {
+    if (event === "new claim") {
       return "Bienvenido a SmartMove! 😊\nPor favor, denos una breve descripción tu consulta y te responderemos a la brevedad.";
     }
 
@@ -159,7 +159,6 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
     }
 
     //Caso 2
-
     if (!foundClaim.description && event === "message") {
       foundClaim.description = userMessage;
       const updatedClaim = await Claim.findOneAndUpdate(
