@@ -165,24 +165,17 @@ router.put("/:claimId", authenticateToken, async (req, res) => {
       { new: true }
     );
 
-    if (!updatedClaim) {
+    const createLog = updatedClaim ? ["Resuelto", "Cerrado"].includes(updatedClaim.status) : false;
+
+    if (createLog) {
       await logAction(
         req.params.claimId,
-        "Tried updating a claim",
-        "Claim with id: " + req.params.claimId + " was not found",
-        req.user,
-        "Admin"
+        updatedClaim.status,
+        updatedClaim.caseType + " " + updatedClaim.status,
+        req.body.user || "Soporte",
+        "Soporte" // admin solo haria CRUD de user, no participa de reclamos
       );
-      return res.status(404).send("Claim not found");
     }
-
-    await logAction(
-      req.params.claimId,
-      "Updated claim",
-      "Updated following fields: " + Object.keys(req.body).toString(),
-      req.body.user || "Unnamed operator",
-      "Admin"
-    );
 
     return res.status(200).send(updatedClaim);
   } catch (error) {
@@ -204,7 +197,6 @@ router.put("/:claimId/assign-chat", authenticateToken, async (req, res) => {
       return res.status(404).send("Claim not found");
     }
 
-    //TODO: Log action
 
     return res.status(200).send(updatedClaim);
   } catch (error) {

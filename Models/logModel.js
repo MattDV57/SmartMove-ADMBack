@@ -6,7 +6,7 @@ const logSchema = new mongoose.Schema({
   action: { type: String },
   details: { type: String },
   user: { type: String },
-  perfomedBy: { type: String, enum: ["Usuario", "Admin"] },
+  perfomedBy: { type: String, enum: ["Soporte", "Admin"] },
 });
 
 export const Log = mongoose.model("Log", logSchema);
