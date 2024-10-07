@@ -14,6 +14,7 @@ import loginRoutes from "./Routes/loginRoutes.js";
 import whatsAppRoutes from "./Routes/whatsappRoutes.js";
 import authRoutes from "./Routes/authRoutes.js";
 import logRoutes from "./Routes/logRoutes.js";
+import userRoutes from "./Routes/userRoutes.js";
 import socketHandler from "./Sockets/socketHandler.js";
 
 const app = express();
@@ -38,6 +39,7 @@ app.use("/login", loginRoutes);
 app.use("/whatsapp", whatsAppRoutes);
 app.use("/auth", authRoutes);
 app.use("/log", logRoutes);
+app.use("/users", userRoutes);
 
 // Listen for connections in socket.io
 socketHandler(io);
