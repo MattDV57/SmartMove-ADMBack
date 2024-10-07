@@ -6,15 +6,6 @@ import authenticateToken from "../utils/jwtChecker.js";
 
 const router = express.Router();
 
-// Get my claims
-//TODO: /claim/operators/:userId
-
-// Get logs paginated
-//TODO: Object logs cuando se cierre o resuelva un reclamo y/o ABM de usuarios
-//TODO: /claim/logs?logType= ['users', 'claims']
-
-// Put operator in claim
-//TODO: /claim/:claimId/operators/:userId
 
 // Get all claims
 router.get("/", authenticateToken, async (req, res) => {
