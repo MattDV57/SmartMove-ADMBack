@@ -98,9 +98,7 @@ router.post("/webhook", async (req, res) => {
         }
         let message = req.body.entry[0].changes[0].value.messages[0].text.body;
         const messageToSend = await messageFlow(message, phoneNumber);
-        if (messageToSend !== "nothing") {
-          await sendWhatsAppMessage(messageToSend, phoneNumber);
-        }
+        await sendWhatsAppMessage(messageToSend, phoneNumber);
       }
     } else {
       let messagesBody = req.body.value.messages;
@@ -112,9 +110,7 @@ router.post("/webhook", async (req, res) => {
         let message = messagesBody[0].text.body;
 
         const messageToSend = await messageFlow(message, phoneNumber);
-        if (messageToSend !== "nothing") {
-          await sendWhatsAppMessage(messageToSend, phoneNumber);
-        }
+        await sendWhatsAppMessage(messageToSend, phoneNumber);
       }
     }
     res.status(200).send();
@@ -126,14 +122,21 @@ router.post("/webhook", async (req, res) => {
 
 const messageFlow = async (userMessage, userPhoneNumber) => {
   try {
-    const { foundClaim, event } = await findUserActiveClaim(userPhoneNumber);
+    const foundClaim = await findUserActiveClaim(userPhoneNumber);
 
     //Caso 1: El consulta es nuevo
-    if (!foundClaim.description && event === "new claim") {
-      return "Bienvenido a SmartMove! 😊\nPor favor, denos una breve descripción tu consulta y te responderemos a la brevedad.";
+    if (!foundClaim.description) {
+      foundClaim.description = userMessage;
+      const updatedClaim = await Claim.findOneAndUpdate(
+        { _id: foundClaim._id },
+        { description: userMessage },
+        { new: true }
+      );
+
+      return "Bienvenido a SmartMove! 😊\nPor favor, escribinos tu consulta y te responderemos a la brevedad.";
     }
 
-    //Caso 4: Cerrar consulta
+    //Caso 3: Cerrar consulta
     if (
       userMessage.toLowerCase().includes("cerrar consulta") ||
       userMessage.toLowerCase().includes("cerrar la consulta") ||
@@ -158,20 +161,8 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
       return "Tu consulta ha sido cerrada. Gracias por comunicarte con nosotros.";
     }
 
-    //Caso 2
-
-    if (!foundClaim.description && event === "message") {
-      foundClaim.description = userMessage;
-      const updatedClaim = await Claim.findOneAndUpdate(
-        { _id: foundClaim._id },
-        { description: userMessage },
-        { new: true }
-      );
-      return "Gracias por tu mensaje. Estamos trabajando en tu consulta. Por favor, si tienes más información para agregar, escríbenos.";
-    }
-
-    //Caso 3: Ya tenemos la descripcion del consulta
-    if (foundClaim.description && event === "message") {
+    //Caso 2: Ya tenemos la descripcion del consulta
+    if (foundClaim.description) {
       const userMessageBody = {
         from: userPhoneNumber,
         body: userMessage,
@@ -183,7 +174,7 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
         { new: true, useFindAndModify: false } // Return the updated document after the update
       );
 
-      return "nothing";
+      return "Gracias por tu mensaje. Estamos trabajando en tu consulta. Por favor, si tienes más información para agregar, escríbenos.";
     }
 
     return "Actualmente no podemos procesar tu mensaje, por favor intenta más tarde";
@@ -208,8 +199,9 @@ const findUserActiveClaim = async (userPhoneNumber) => {
     });
 
     if (foundClaim) {
-      return foundClaim, "message";
+      return foundClaim;
     }
+
     //Si no tiene un consulta activo el numero de telefono asociado, crea uno
 
     const createdChat = await Chat.create({});
@@ -220,7 +212,7 @@ const findUserActiveClaim = async (userPhoneNumber) => {
       "user.userPhoneNumber": userPhoneNumber,
       relatedChat: createdChatId,
     });
-    return createdClaim, "new claim";
+    return createdClaim;
   } catch (error) {
     console.log(error);
     return false;
