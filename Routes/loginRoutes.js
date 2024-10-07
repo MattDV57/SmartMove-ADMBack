@@ -1,23 +1,35 @@
 import "dotenv/config";
 import express from "express";
+import { User } from '../Models/userModel.js';
 import jsonwebtoken from "jsonwebtoken";
 
 const router = express.Router();
 
-const fakeUser = {
-  email: "userEmail@email.com",
-  userId: 1,
-  username: "username",
-};
 
 router.post("/", async (req, res) => {
+
+  const { email, password } = req.body;
+
   try {
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
     const accessToken = jsonwebtoken.sign(
-      fakeUser,
+      {
+        userId: user._id,
+        email: user.email,
+        username: user.username,
+        accessRole: user.accessRole
+      },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "24h" }
     );
-    res.status(200).send({ accessToken: accessToken });
+
+    res.status(200).send({ accessToken });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
