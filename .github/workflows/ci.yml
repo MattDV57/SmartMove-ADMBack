@@ -1,6 +1,6 @@
 name: Docker Image CI
 
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+run-name: ${{ github.actor }} is testing Docker Image CI with GitHub Actions 🚀
 on:
   push:
     branches: [ "main" ]
