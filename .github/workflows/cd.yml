@@ -13,10 +13,10 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Pull Docker image
-      run: sudo docker pull mattdv57/smartmoveback:latest
     - name: Delete Old docker container
       run: sudo docker rm -f smartmoveback-container || true
+    - name: Pull Docker image
+      run: sudo docker pull mattdv57/smartmoveback:latest
     - name: Login Dockerhub
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
