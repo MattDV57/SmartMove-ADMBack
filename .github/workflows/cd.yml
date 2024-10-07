@@ -25,6 +25,6 @@ jobs:
     - name: Run Docker container
       env:
             DATABASE_URL: ${{ secrets.DATABASE_URL }}
-            AMBIENTE: ${{ secrets.AMBIENTE }} # here it is!
-      run: sudo docker run -d -p 8080:8080 -e $AMBIENTE --name smartmoveback-container mattdv57/smartmoveback
+            AMBIENTE: ${{ secrets.Ambiente }} # here it is!
+      run: sudo docker run -d -p 8080:8080 -e $Ambiente --name smartmoveback-container mattdv57/smartmoveback
     
