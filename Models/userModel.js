@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+
+//TODO: Integration with ldap.
+
 const userSchema = new mongoose.Schema({
   entryDate: { type: Date, default: Date.now },
   fullName: { type: String },

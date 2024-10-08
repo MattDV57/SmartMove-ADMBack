@@ -7,13 +7,17 @@ import { ObjectId } from "mongodb";
 const router = express.Router();
 
 
+//TODO: Integration with ldap.
+//TODO: Middleware for admin req with groups of ldap.
+//TODO: Middleware for creating logs.
+
 /** 
-Get all users: /users?adminId=adminId&page=1&limit=10 
+Get all users: /users?userId=userId&page=1&limit=10 
 */
 router.get("/", authenticateToken, async (req, res) => {
  try {
 
-    if ( await checkIfAdmin(req.query.adminId) ) {
+    if ( await checkIfAllowed(req.query.userId, ["Admin", "Gerente"] ) ) {
         return res.status(403).send({ message: "You can't see this information" });
     }
 
@@ -59,29 +63,32 @@ router.get("/:userId/profile", authenticateToken, async (req, res) => {
 
 
 /** 
-Put user: /users/:userId/:adminId
+Put user: /users/:userId?adminId=adminId
 */
 
-router.put("/:userId/:adminId", authenticateToken, async (req, res) => {
+router.put("/:userId", authenticateToken, async (req, res) => {
     try {
-        const user = await User.findOne({ _id: req.params.userId });
+
+        const user = await User.findById(req.params.userId);
         if (!user) {
         return res.status(404).send({ message: "User not found" });
         }
-
-        if( await checkIfAdmin(req.params.adminId) ) {
+ 
+        if( await checkIfAllowed(req.query.adminId ) ) {
             return res.status(403).send({ message: "You can't update this user" });
         }
-    
+        
         const updatedUser = await User.findOneAndUpdate(
         { _id: req.params.userId },
         req.body,
         { new: true }
         );
 
+        console.log(updatedUser)
+
         await createLog("Put", "Usuario modificado", user.username);
     
-        return res.status(200).send(updatedUser);
+        return res.status(200).send(updatedUser._id);
     } catch (error) {
         console.log(error);
         return res.status(500).send({ message: "Error on server side" });
@@ -91,22 +98,23 @@ router.put("/:userId/:adminId", authenticateToken, async (req, res) => {
 
 
 /**
-Post user: /users/:adminId
+Post user: /users?adminId=adminId
 */
 
 router.post("/", authenticateToken, async (req, res) => {
     try {
         const newUser = new User(req.body);
 
-        // if( await checkIfAdmin(req.params.adminId) ) {
-        //     return res.status(403).send({ message: "You can't update this user" });
-        // }
+        if( await checkIfAllowed(req.query.adminId) ) {
+            return res.status(403).send({ message: "You can't update this user" });
+        }
 
         const savedUser = await newUser.save();
 
-        await createLog("Created", "Usuario creado", savedUser.usename);
+        await createLog("Created", "Usuario creado", savedUser.username);
 
-        return res.status(201).send(savedUser);
+        return res.status(201).send(savedUser._id);
+
     } catch (error) {
         console.log(error);
         return res.status(500).send({ message: "Error on server side" });
@@ -115,21 +123,22 @@ router.post("/", authenticateToken, async (req, res) => {
 
 
 /**
-Delete user: /users/:userId/:adminId
+Delete user: /users/:userId?adminId=adminId
  */
 
-router.delete("/:userId/:adminId", authenticateToken, async (req, res) => {
+router.delete("/:userId", authenticateToken, async (req, res) => {
     try {
-        const user = await User.findOne({ _id: req.params.userId });
+        const user = await User.findById(req.params.userId);
+
         if (!user) {
         return res.status(404).send({ message: "User not found" });
         }
 
-        if( await checkIfAdmin(req.params.adminId) ) {
+        if( await checkIfAllowed(req.query.adminId) ) {
             return res.status(403).send({ message: "You can't delete this user" });
         }
 
-        await User.deleteOne({ _id: req.params.userId });
+        await User.deleteOne(user._id);
 
         await createLog("Delete", "Usuario eliminado", user.usename);
 
@@ -143,10 +152,10 @@ router.delete("/:userId/:adminId", authenticateToken, async (req, res) => {
 
 
 
-const checkIfAdmin = async (userId) => {
+const checkIfAllowed = async (userId, rolesAllowed = ["Admin"] ) => {
     try {
     const user = await User({ _id: userId });
-    return user.accessRole === "Admin";
+    return rolesAllowed.includes(user.accessRole);
     } catch (error) {
         throw error;
     }
