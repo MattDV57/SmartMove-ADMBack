@@ -14,6 +14,11 @@ RUN npm install
 # Copy the application code to the working directory
 COPY --chown=node:node . .
 
+# Definimos los argumentos
+ARG AMBIENTE
+
+# Configuramos las variables de entorno
+ENV AMBIENTE=$AMBIENTE
 # Set environment variables (replace with your actual values)
 #ENV DATABASE_URL="mongodb+srv://SmartMove:awlJ4sZ1PEyBwp6F@adminterna.jxwqb.mongodb.net/AdminInterna?retryWrites=true&w=majority&appName=ADMInterna"
 
