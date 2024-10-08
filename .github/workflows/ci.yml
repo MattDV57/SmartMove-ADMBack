@@ -24,15 +24,9 @@ jobs:
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: Build and push
-
-    - name: Build and push
-      uses: nick-fields/retry@v2
+      uses: docker/build-push-action@v4
       with:
-        timeout_minutes: 10
-        max_attempts: 3
-        command: |
-          docker build \
-          -t mattdv57/smartmoveback:latest \
-          --build-arg AMBIENTE ='${{ secrets.Ambiente }}'  .
-          push: true
+        push: true
+        tags: mattdv57/smartmoveback:latest
+        build-args: AMBIENTE=${{ secrets.Ambiente }}
       
