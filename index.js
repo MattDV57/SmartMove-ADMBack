@@ -45,7 +45,7 @@ app.use("/users", userRoutes);
 socketHandler(io);
 
 mongoose
-  .connect(process.env.MONGO_CONNECTION_STRING)
+  .connect(process.env.MONGO_CONNECTION_STRING2)
   .then(() => {
     server.listen(process.env.PORT, () => {
       console.log("App is running on port = " + process.env.PORT);
