@@ -37,7 +37,7 @@ jobs:
             --build-arg LDAP_ADMIN_DN='${{ secrets.LDAP_ADMIN_DN }}' \
             --build-arg LDAP_ADMIN_PASSWORD='${{ secrets.LDAP_ADMIN_PASSWORD }}' \
             --build-arg LDAP_URL='${{ secrets.LDAP_URL }}' \
-            --build-arg MONGO_CONNECTION_STRING='${{ secrets.MONGO_CONNECTION_STRING }}' \
+            --build-arg MONGO_CONNECTION_STRING2='${{ secrets.MONGO_CONNECTION_STRING2 }}' \
             --build-arg DATABASE_URL='${{ secrets.DATABASE_URL }}' \
             --build-arg PORT='${{ secrets.PORT }}' \
             --build-arg REFRES_TOKEN_SECRET='${{ secrets.REFRES_TOKEN_SECRET }}' \
