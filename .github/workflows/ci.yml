@@ -24,9 +24,29 @@ jobs:
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: Build and push
-      uses: docker/build-push-action@v4
+      uses: nick-fields/retry@v2
       with:
-        push: true
-        tags: mattdv57/smartmoveback:latest
-        build-args: AMBIENTE=${{ secrets.Ambiente }}
+        timeout_minutes: 10
+        max_attempts: 3
+        command: |
+            docker build \
+            -t mattdv57/smartmoveback \
+            --build-arg ACCESS_TOKEN_SECRET='${{ secrets.ACCESS_TOKEN_SECRET }}' \
+            --build-arg DOCKER_PASSWORD='${{ secrets.DOCKER_PASSWORD }}' \
+            --build-arg DOCKER_USER='${{ secrets.DOCKER_USER }}' \
+            --build-arg LDAP_ADMIN_DN='${{ secrets.LDAP_ADMIN_DN }}' \
+            --build-arg LDAP_ADMIN_PASSWORD='${{ secrets.LDAP_ADMIN_PASSWORD }}' \
+            --build-arg LDAP_URL='${{ secrets.LDAP_URL }}' \
+            --build-arg MONGO_CONNECTION_STRING='${{ secrets.MONGO_CONNECTION_STRING }}' \
+            --build-arg DATABASE_URL='${{ secrets.DATABASE_URL }}' \
+            --build-arg PORT='${{ secrets.PORT }}' \
+            --build-arg REFRES_TOKEN_SECRET='${{ secrets.REFRES_TOKEN_SECRET }}' \
+            --build-arg TEST_PHONE_NUMBER='${{ secrets.TEST_PHONE_NUMBER }}' \
+            --build-arg WHATSAPP_PHONE_ID='${{ secrets.WHATSAPP_PHONE_ID }}' \
+            --build-arg WHATSAPP_TOKEN='${{ secrets.WHATSAPP_TOKEN }}' \
+            --build-arg WHATSAPP_VERIFY_TOKEN='${{ secrets.WHATSAPP_VERIFY_TOKEN }}' .
+
+            docker tag smartmoveback mattdv57/smartmoveback:latest
+
+            docker push mattdv57/smartmoveback:latest
       
