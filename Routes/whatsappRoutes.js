@@ -10,6 +10,36 @@ const router = express.Router();
 
 const baseClaimBody = {};
 
+//Array para chequear si el comando ingresado existe
+const messageTemplateCodeWords = [
+  //Funcionalidad
+  "Volver a menú",
+  "Terminar el chat",
+
+  //Botones de reclamo
+  "Generar un reclamo",
+  "Problema con alquiler",
+  "Problema con dueño",
+  "Maltrato",
+  "Intento de estafa",
+  "Oferta engañosa",
+  "Problema con pagos",
+  "Pago no recibido",
+  "No puedo enviar pago",
+  "Queja",
+  "Mal servicio",
+  "Mal soporte",
+  "Mala experiencia",
+
+  //Botones de soporte técnico
+  "Soporte técnico",
+  "No puedo registrarme",
+  "No puedo ingresar",
+  "Sitio web no funciona",
+];
+
+//
+
 /*
 messaging_product: "whatsapp",
         to: `${process.env.TEST_PHONE_NUMBER}`,
