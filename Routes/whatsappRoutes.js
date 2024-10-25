@@ -129,8 +129,12 @@ router.post("/webhook", async (req, res) => {
     let hasStatuses = false;
     if (reqBody.entry[0].changes[0].value.statuses != undefined) {
       console.log(reqBody.entry[0].changes[0].value.statuses[0]);
+      console.log("HAS STATUSES");
       hasStatuses = true;
     }
+    console.log("MESSAGES:");
+    console.log(reqBody.entry[0].changes[0].value.messages);
+    console.log(reqBody.entry[0].changes[0].value.messages[0]);
     console.log("LOGGED INFO OF RESPONSE");
 
     if (reqBody.object && !hasStatuses) {
@@ -143,6 +147,7 @@ router.post("/webhook", async (req, res) => {
         const messageToSend = await messageFlow(message, phoneNumber);
         const response = await sendWhatsAppTemplate(messageToSend, phoneNumber);
         console.log(response);
+        console.log(response.data);
       }
     } else if (reqBody.entry[0].changes[0].value.statuses[0]) {
       console.log("STATUSES");
@@ -160,7 +165,6 @@ router.post("/webhook", async (req, res) => {
         console.log(response);
       }*/
     }
-    console.log(response.data);
     return res.status(200).send();
   } catch (error) {
     console.log(error);
