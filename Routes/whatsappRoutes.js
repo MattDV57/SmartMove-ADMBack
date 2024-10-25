@@ -160,9 +160,6 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
     const templateCode = await getTemplateByCode(userMessage);
     console.log(templateCode);
     console.log(typeof templateCode);
-    if (!templateCode) {
-      return await getTemplateByCode("Volver a menú");
-    }
     return templateCode;
 
     const foundClaim = await findUserActiveClaim(userPhoneNumber);

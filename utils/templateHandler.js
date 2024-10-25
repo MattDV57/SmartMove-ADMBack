@@ -26,7 +26,11 @@ const messageTemplateCodeWords = {
 };
 
 const getTemplateByCode = async (code) => {
-  return messageTemplateCodeWords[code].toString();
+  const response = messageTemplateCodeWords[code];
+  if (response == undefined) {
+    return "primer_mensaje_bienvenida";
+  }
+  return response;
 };
 
 export default getTemplateByCode;
