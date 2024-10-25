@@ -126,10 +126,14 @@ router.post("/webhook", async (req, res) => {
     console.log(reqBody);
     console.log(reqBody.entry[0].changes);
     console.log(reqBody.entry[0].changes[0]);
-    console.log(reqBody.entry[0].changes[0].value.statuses[0]);
+    let hasStatuses = false;
+    if (reqBody.entry[0].changes[0].value.statuses != undefined) {
+      console.log(reqBody.entry[0].changes[0].value.statuses[0]);
+      hasStatuses = true;
+    }
     console.log("LOGGED INFO OF RESPONSE");
 
-    if (reqBody.object) {
+    if (reqBody.object && !hasStatuses) {
       if (reqBody.entry[0].changes[0].value) {
         let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
         if (phoneNumber.startsWith("549")) {
