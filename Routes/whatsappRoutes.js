@@ -55,7 +55,7 @@ const sendWhatsAppMessage = async (message, phone) => {
   }
 };
 
-const sendWhatsAppTemplate = async (phone, templateCode) => {
+const sendWhatsAppTemplate = async (templateCode, phone) => {
   const response = await axios({
     url: `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
     method: "post",
@@ -131,7 +131,7 @@ router.post("/webhook", async (req, res) => {
         }
         let message = req.body.entry[0].changes[0].value.messages[0].text.body;
         const messageToSend = await messageFlow(message, phoneNumber);
-        await sendWhatsAppMessage(messageToSend, phoneNumber);
+        await sendWhatsAppTemplate(messageToSend, phoneNumber);
       }
     } else {
       let messagesBody = req.body.value.messages;
@@ -143,7 +143,7 @@ router.post("/webhook", async (req, res) => {
         let message = messagesBody[0].text.body;
 
         const messageToSend = await messageFlow(message, phoneNumber);
-        await sendWhatsAppMessage(messageToSend, phoneNumber);
+        await sendWhatsAppTemplate(messageToSend, phoneNumber);
       }
     }
     res.status(200).send();
