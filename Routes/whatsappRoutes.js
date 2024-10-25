@@ -141,16 +141,40 @@ router.post("/webhook", async (req, res) => {
     console.log(reqBody.entry[0].changes[0].value.messages);
     console.log(reqBody.entry[0].changes[0].value.messages[0]);
     console.log("LOGGED INFO OF RESPONSE");
-
+    15551362976;
     if (reqBody.object && !hasStatuses) {
       if (reqBody.entry[0].changes[0].value) {
         if (reqBody.entry[0].changes[0].value.messages[0].button != undefined) {
+          if (
+            req.body.entry[0].changes[0].value.messages[0].from !=
+            process.env.TEST_PHONE_NUMBER
+          ) {
+            let phoneNumber =
+              req.body.entry[0].changes[0].value.messages[0].from;
+            if (phoneNumber.startsWith("549")) {
+              phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
+            }
+            let message =
+              req.body.entry[0].changes[0].value.messages[0].button.text;
+            const messageToSend = await messageFlow(message, phoneNumber);
+            const response = await sendWhatsAppTemplate(
+              messageToSend,
+              phoneNumber
+            );
+            console.log(response);
+            console.log(response.data);
+          }
+        }
+        if (
+          req.body.entry[0].changes[0].value.messages[0].from !=
+          process.env.TEST_PHONE_NUMBER
+        ) {
           let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
           if (phoneNumber.startsWith("549")) {
             phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
           }
           let message =
-            req.body.entry[0].changes[0].value.messages[0].button.text;
+            req.body.entry[0].changes[0].value.messages[0].text.body;
           const messageToSend = await messageFlow(message, phoneNumber);
           const response = await sendWhatsAppTemplate(
             messageToSend,
@@ -159,15 +183,6 @@ router.post("/webhook", async (req, res) => {
           console.log(response);
           console.log(response.data);
         }
-        let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
-        if (phoneNumber.startsWith("549")) {
-          phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
-        }
-        let message = req.body.entry[0].changes[0].value.messages[0].text.body;
-        const messageToSend = await messageFlow(message, phoneNumber);
-        const response = await sendWhatsAppTemplate(messageToSend, phoneNumber);
-        console.log(response);
-        console.log(response.data);
       }
     } else if (reqBody.entry[0].changes[0].value.statuses[0]) {
       console.log("STATUSES");
