@@ -6,7 +6,6 @@ import axios from "axios";
 import { Claim } from "../Models/claimModel.js";
 import { Chat } from "../Models/chatModel.js";
 import getTemplateByCode from "../utils/templateHandler.js";
-import { ConstraintViolationError } from "ldapjs";
 
 const router = express.Router();
 
