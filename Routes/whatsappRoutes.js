@@ -6,6 +6,7 @@ import axios from "axios";
 import { Claim } from "../Models/claimModel.js";
 import { Chat } from "../Models/chatModel.js";
 import getTemplateByCode from "../utils/templateHandler.js";
+import { ConstraintViolationError } from "ldapjs";
 
 const router = express.Router();
 
@@ -122,6 +123,9 @@ router.post("/webhook", async (req, res) => {
   try {
     const reqBody = req.body;
     console.log(reqBody);
+    console.log(reqBody.entry[0].changes);
+    console.log(reqBody.entry[0].changes[0]);
+    console.log("LOGGED INFO OF RESPONSE");
 
     if (reqBody.object) {
       if (reqBody.entry[0].changes[0].value) {
