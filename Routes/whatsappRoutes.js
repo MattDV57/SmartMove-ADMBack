@@ -75,6 +75,7 @@ const sendWhatsAppTemplate = async (templateCode, phone) => {
       },
     },
   });
+  return response;
 };
 
 router.post("/send-message", async (req, res) => {
@@ -121,9 +122,11 @@ router.post("/testTemplate", async (req, res) => {
 router.post("/webhook", async (req, res) => {
   try {
     const reqBody = req.body;
+    console.log("LOGGING INFO OF RESPONSE");
     console.log(reqBody);
     console.log(reqBody.entry[0].changes);
     console.log(reqBody.entry[0].changes[0]);
+    console.log(reqBody.entry[0].changes[0].value.statuses[0]);
     console.log("LOGGED INFO OF RESPONSE");
 
     if (reqBody.object) {
@@ -137,8 +140,10 @@ router.post("/webhook", async (req, res) => {
         const response = await sendWhatsAppTemplate(messageToSend, phoneNumber);
         console.log(response);
       }
-    } else {
-      let messagesBody = req.body.value.messages;
+    } else if (reqBody.entry[0].changes[0].value.statuses[0]) {
+      console.log("STATUSES");
+      console.log(reqBody.entry[0].changes[0].value.statuses[0]);
+      /*let messagesBody = reqBody.value.messages;
       if (messagesBody) {
         let phoneNumber = messagesBody[0].from;
         if (phoneNumber.startsWith("549")) {
@@ -149,9 +154,10 @@ router.post("/webhook", async (req, res) => {
         const messageToSend = await messageFlow(message, phoneNumber);
         const response = await sendWhatsAppTemplate(messageToSend, phoneNumber);
         console.log(response);
-      }
+      }*/
     }
-    return res.status(200).send(response.data);
+    console.log(response.data);
+    return res.status(200).send();
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
