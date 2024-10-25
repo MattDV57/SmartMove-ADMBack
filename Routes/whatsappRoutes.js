@@ -55,6 +55,28 @@ const sendWhatsAppMessage = async (message, phone) => {
   }
 };
 
+const sendWhatsAppTemplate = async (phone, templateCode) => {
+  const response = await axios({
+    url: `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    data: {
+      messaging_product: "whatsapp",
+      to: phone,
+      type: "template",
+      template: {
+        name: templateCode,
+        language: {
+          code: "es_AR",
+        },
+      },
+    },
+  });
+};
+
 router.post("/send-message", async (req, res) => {
   try {
     let phone = req.body.phone;
@@ -99,6 +121,7 @@ router.post("/testTemplate", async (req, res) => {
 router.post("/webhook", async (req, res) => {
   try {
     const reqBody = req.body;
+    console.log(reqBody);
 
     if (reqBody.object) {
       if (reqBody.entry[0].changes[0].value) {
@@ -132,6 +155,12 @@ router.post("/webhook", async (req, res) => {
 
 const messageFlow = async (userMessage, userPhoneNumber) => {
   try {
+    const templateCode = await getTemplateByCode(userMessage);
+    if (!templateCode) {
+      return await getTemplateByCode("Volver a menú");
+    }
+    return templateCode;
+
     const foundClaim = await findUserActiveClaim(userPhoneNumber);
 
     //Caso 1: El consulta es nuevo
