@@ -1,6 +1,6 @@
 const messageTemplateCodeWords = {
   //Funcionalidad
-  "Volver a menú": "",
+  "Volver a menú": "primer_mensaje_bienvenida",
   "Terminar el chat": "",
 
   //Botones de reclamo
@@ -26,7 +26,7 @@ const messageTemplateCodeWords = {
 };
 
 const getTemplateByCode = async (code) => {
-  return messageTemplateCodeWords[code];
+  return messageTemplateCodeWords[code].toString();
 };
 
 export default getTemplateByCode;

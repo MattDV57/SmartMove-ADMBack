@@ -131,7 +131,8 @@ router.post("/webhook", async (req, res) => {
         }
         let message = req.body.entry[0].changes[0].value.messages[0].text.body;
         const messageToSend = await messageFlow(message, phoneNumber);
-        await sendWhatsAppTemplate(messageToSend, phoneNumber);
+        const response = await sendWhatsAppTemplate(messageToSend, phoneNumber);
+        console.log(response);
       }
     } else {
       let messagesBody = req.body.value.messages;
@@ -143,10 +144,11 @@ router.post("/webhook", async (req, res) => {
         let message = messagesBody[0].text.body;
 
         const messageToSend = await messageFlow(message, phoneNumber);
-        await sendWhatsAppTemplate(messageToSend, phoneNumber);
+        const response = await sendWhatsAppTemplate(messageToSend, phoneNumber);
+        console.log(response);
       }
     }
-    res.status(200).send();
+    return res.status(200).send(response.data);
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
