@@ -5,38 +5,13 @@ import axios from "axios";
 
 import { Claim } from "../Models/claimModel.js";
 import { Chat } from "../Models/chatModel.js";
+import getTemplateByCode from "../utils/templateHandler.js";
 
 const router = express.Router();
 
 const baseClaimBody = {};
 
 //Array para chequear si el comando ingresado existe
-const messageTemplateCodeWords = [
-  //Funcionalidad
-  "Volver a menú",
-  "Terminar el chat",
-
-  //Botones de reclamo
-  "Generar un reclamo",
-  "Problema con alquiler",
-  "Problema con dueño",
-  "Maltrato",
-  "Intento de estafa",
-  "Oferta engañosa",
-  "Problema con pagos",
-  "Pago no recibido",
-  "No puedo enviar pago",
-  "Queja",
-  "Mal servicio",
-  "Mal soporte",
-  "Mala experiencia",
-
-  //Botones de soporte técnico
-  "Soporte técnico",
-  "No puedo registrarme",
-  "No puedo ingresar",
-  "Sitio web no funciona",
-];
 
 //
 
@@ -114,6 +89,11 @@ router.get("/webhook", async (req, res) => {
       res.sendStatus(403);
     }
   }
+});
+
+router.post("/testTemplate", async (req, res) => {
+  let response = await getTemplateByCode(req.body.code);
+  return res.status(200).send(response);
 });
 
 router.post("/webhook", async (req, res) => {
