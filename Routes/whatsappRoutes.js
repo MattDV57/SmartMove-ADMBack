@@ -121,6 +121,11 @@ router.post("/testTemplate", async (req, res) => {
 
 router.post("/webhook", async (req, res) => {
   try {
+    if (reqBody.entry[0].changes[0].value.statuses != undefined) {
+      console.log("found statuses and leaving");
+      return res.status(200).send();
+    }
+
     const reqBody = req.body;
     console.log("LOGGING INFO OF RESPONSE");
     console.log(reqBody);
