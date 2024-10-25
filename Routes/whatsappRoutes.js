@@ -139,6 +139,21 @@ router.post("/webhook", async (req, res) => {
 
     if (reqBody.object && !hasStatuses) {
       if (reqBody.entry[0].changes[0].value) {
+        if (reqBody.entry[0].changes[0].value.messages[0].button != undefined) {
+          let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
+          if (phoneNumber.startsWith("549")) {
+            phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
+          }
+          let message =
+            req.body.entry[0].changes[0].value.messages[0].button.text;
+          const messageToSend = await messageFlow(message, phoneNumber);
+          const response = await sendWhatsAppTemplate(
+            messageToSend,
+            phoneNumber
+          );
+          console.log(response);
+          console.log(response.data);
+        }
         let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
         if (phoneNumber.startsWith("549")) {
           phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
