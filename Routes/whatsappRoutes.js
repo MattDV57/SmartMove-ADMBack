@@ -156,6 +156,8 @@ router.post("/webhook", async (req, res) => {
 const messageFlow = async (userMessage, userPhoneNumber) => {
   try {
     const templateCode = await getTemplateByCode(userMessage);
+    console.log(templateCode);
+    console.log(typeof templateCode);
     if (!templateCode) {
       return await getTemplateByCode("Volver a menú");
     }
