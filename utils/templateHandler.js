@@ -28,10 +28,10 @@ const messageTemplateCodeWords = {
 const getTemplateByCode = async (code) => {
   const response = messageTemplateCodeWords[code];
   if (response == undefined) {
-    return "primer_mensaje_bienvenida";
+    return null;
   }
   if (response.length == 0) {
-    return "primer_mensaje_bienvenida";
+    return null;
   }
   return response;
 };

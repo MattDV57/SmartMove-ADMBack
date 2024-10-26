@@ -141,7 +141,6 @@ router.post("/webhook", async (req, res) => {
     console.log(reqBody.entry[0].changes[0].value.messages);
     console.log(reqBody.entry[0].changes[0].value.messages[0]);
     console.log("LOGGED INFO OF RESPONSE");
-    15551362976;
     if (reqBody.object && !hasStatuses) {
       if (reqBody.entry[0].changes[0].value) {
         if (reqBody.entry[0].changes[0].value.messages[0].button != undefined) {
@@ -157,10 +156,13 @@ router.post("/webhook", async (req, res) => {
             let message =
               req.body.entry[0].changes[0].value.messages[0].button.text;
             const messageToSend = await messageFlow(message, phoneNumber);
-            const response = await sendWhatsAppTemplate(
-              messageToSend,
-              phoneNumber
-            );
+            if (messageToSend != null) {
+              const response = await sendWhatsAppTemplate(
+                messageToSend,
+                phoneNumber
+              );
+            }
+            console.log("IS MESSAGE NULL: " + messageToSend == null);
             console.log(response);
             console.log(response.data);
           }
@@ -176,10 +178,13 @@ router.post("/webhook", async (req, res) => {
           let message =
             req.body.entry[0].changes[0].value.messages[0].text.body;
           const messageToSend = await messageFlow(message, phoneNumber);
-          const response = await sendWhatsAppTemplate(
-            messageToSend,
-            phoneNumber
-          );
+          if (messageToSend != null) {
+            const response = await sendWhatsAppTemplate(
+              messageToSend,
+              phoneNumber
+            );
+          }
+          console.log("IS MESSAGE NULL: " + messageToSend == null);
           console.log(response);
           console.log(response.data);
         }
