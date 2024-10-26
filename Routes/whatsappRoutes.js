@@ -91,7 +91,7 @@ router.post("/send-message", async (req, res) => {
     return res.status(200).send(response.data);
   } catch (error) {
     console.log(error);
-    return res.status(500).send(error);
+    return res.status(200).send(error);
   }
 });
 
@@ -129,6 +129,8 @@ router.post("/webhook", async (req, res) => {
     const reqBody = req.body;
     console.log("LOGGING INFO OF RESPONSE");
     console.log(reqBody);
+    console.log("ENTRIES:");
+    console.log(reqBody.entry[0]);
     console.log(reqBody.entry[0].changes);
     console.log(reqBody.entry[0].changes[0]);
     let hasStatuses = false;
@@ -208,7 +210,7 @@ router.post("/webhook", async (req, res) => {
     return res.status(200).send();
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ message: "Error on server side" });
+    return res.status(200).send({ message: "Error on server side" });
   }
 });
 
