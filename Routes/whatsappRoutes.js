@@ -142,7 +142,7 @@ router.post("/webhook", async (req, res) => {
     console.log(reqBody.entry[0].changes[0].value.messages[0]);
     console.log("LOGGED INFO OF RESPONSE");
     15551362976;
-    if (reqBody.object != "whatsapp_business_account") {
+    if (reqBody.object && !hasStatuses) {
       if (reqBody.entry[0].changes[0].value) {
         if (reqBody.entry[0].changes[0].value.messages[0].button != undefined) {
           if (
