@@ -22,7 +22,7 @@ const messageTemplateCodeWords = {
   "Soporte técnico": "servidores_estado_caido",
   "No puedo registrarme": "servidores_estado_caido",
   "No puedo ingresar": "servidores_estado_caido",
-  "Sitio web no funciona": "servidores_estado_caido",
+  "Sitio web no funciona": "servidores_estado_funcionando",
 };
 
 const getTemplateByCode = async (code) => {
