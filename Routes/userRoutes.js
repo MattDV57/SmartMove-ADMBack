@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import { User } from "../Models/userModel.js";
-import authenticateToken from "../utils/jwtChecker.js";
+import authenticateToken from "../middlewares/jwtChecker.js";
 import logAction from "../utils/logger.js";
 import { ObjectId } from "mongodb";
 const router = express.Router();

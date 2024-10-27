@@ -2,7 +2,7 @@ import express from "express";
 import { Claim } from "../Models/claimModel.js";
 import { Chat } from "../Models/chatModel.js";
 import logAction from "../utils/logger.js";
-import authenticateToken from "../utils/jwtChecker.js";
+import authenticateToken from "../middlewares/jwtChecker.js";
 
 const router = express.Router();
 
