@@ -4,6 +4,7 @@ import { User } from "../Models/userModel.js";
 import authenticateToken from "../middlewares/jwtChecker.js";
 import logAction from "../utils/logger.js";
 import { ObjectId } from "mongodb";
+import { createLdapUser } from "../services/ldapService.js";
 const router = express.Router();
 
 
@@ -96,7 +97,7 @@ router.put("/:userId", authenticateToken, async (req, res) => {
 });
 
 
-
+//TODO: Capture unique email error
 /**
 Post user: /users?adminId=adminId
 */
@@ -108,6 +109,13 @@ router.post("/", authenticateToken, async (req, res) => {
         if( await checkIfAllowed(req.query.adminId) ) {
             return res.status(403).send({ message: "You can't update this user" });
         }
+
+        console.log(newUser)
+
+        if ( !(await createLdapUser((newUser.email).split('@')[0], newUser.accessRole)) ) {
+            return res.status(409).send({ message: "Error creating user" })
+        }
+
 
         const savedUser = await newUser.save();
 

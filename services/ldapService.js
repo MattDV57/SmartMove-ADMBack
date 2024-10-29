@@ -31,6 +31,35 @@ export const authenticateLdapUser = (username, password) => {
 };
 
 
+export const createLdapUser = (username, accessRole) => {
+    console.log(username, accessRole)
+    return new Promise((resolve, reject) => {
+        
+        // Definir el DN de acuerdo al rol de acceso
+        const baseDn = accessRole === "Admin" 
+            ? `ou=administradores,${process.env.LDAP_DN}` 
+            : `ou=usuarios,${process.env.LDAP_DN}`;
+        
+        const userDn = `cn=${username},${baseDn}`;
+
+        // Crear el objeto del usuario para LDAP
+        const newUser = {
+            cn: username,
+            sn: username, // Apellido o identificador único
+            userPassword: "admin", // Contraseña por defecto
+            objectClass: ["inetOrgPerson", "organizationalPerson", "person", "top"], // Clases de objeto necesarias
+        };
+
+        // Llamada para añadir el usuario
+        client.add(userDn, newUser, (err) => {
+            if (err) {
+                return reject("Error al crear el usuario en LDAP: " + err.message);
+            }
+            resolve(true);
+        });
+    });
+};
+
 
 
 // export const isAdminLdap = async (username) => {

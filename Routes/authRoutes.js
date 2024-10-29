@@ -11,27 +11,29 @@ router.post("/login", async (req, res) => {
 
   const { email, password } = req.body;
 
-  
-
-  
 
   try {
 
     const username = email?.split("@")[0];
 
-    console.log("Username: " + username, "PassWord:", password)
     await authenticateLdapUser(username, password);
     
     let user = await User.findOne({ username });
 
 
-    const jwtToken = jsonwebtoken.sign(
-      { username: username },
+    const accessToken = jsonwebtoken.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        username: user.username,
+        accessRole: user.accessRole
+      },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "24h" }
     );
 
-    res.status(200).send({ token: jwtToken });
+
+    res.status(200).send({ accessToken, ...user._doc });
 
    
   } catch (error) {
