@@ -11,7 +11,7 @@ router.post("/", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-
+    
     const user = await User.findOne({ email }).select("-password -createdAt -updatedAt -__v");
 
     if (!user) {
@@ -28,12 +28,17 @@ router.post("/", async (req, res) => {
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "24h" }
     );
-
+    
     res.status(200).send({ accessToken, ...user._doc });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
   }
 });
+
+
+// router.get("/permissions")
+
+
 
 export default router;

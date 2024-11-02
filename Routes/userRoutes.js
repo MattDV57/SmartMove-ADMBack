@@ -1,9 +1,11 @@
 import "dotenv/config";
 import express from "express";
 import { User } from "../Models/userModel.js";
-import authenticateToken from "../utils/jwtChecker.js";
+import authenticateToken from "../Middlewares/jwtChecker.js";
 import logAction from "../utils/logger.js";
 import { ObjectId } from "mongodb";
+import { authorizeRole } from "../Middlewares/authorizeRole.js";
+import { ACCESS_CONTROL } from "../utils/PERMISSIONS.js";
 const router = express.Router();
 
 
@@ -12,14 +14,10 @@ const router = express.Router();
 //TODO: Middleware for creating logs.
 
 /** 
-Get all users: /users?userId=userId&page=1&limit=10 
+Get all users: /users?page=1&limit=10 
 */
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/", authenticateToken, authorizeRole(ACCESS_CONTROL.GET_ALL_USERS), async (req, res) => {
  try {
-
-    if ( await checkIfAllowed(req.query.userId, ["Admin", "Gerente"] ) ) {
-        return res.status(403).send({ message: "You can't see this information" });
-    }
 
     let page = parseInt(req.query.page) || 1;
     let limitPerPage = parseInt(req.query.limit) || 10;
@@ -46,7 +44,7 @@ router.get("/", authenticateToken, async (req, res) => {
 Get user by id: /users/:userId
  */
 
-router.get("/:userId/profile", authenticateToken, async (req, res) => {
+router.get("/:userId/profile", authenticateToken, authorizeRole(ACCESS_CONTROL.GET_USER_PROFILE), async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.params.userId });
         if (!user) {
@@ -63,20 +61,18 @@ router.get("/:userId/profile", authenticateToken, async (req, res) => {
 
 
 /** 
-Put user: /users/:userId?adminId=adminId
+Put user: /users/:userId
 */
 
-router.put("/:userId", authenticateToken, async (req, res) => {
+router.put("/:userId", authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_USER), async (req, res) => {
     try {
 
         const user = await User.findById(req.params.userId);
+
         if (!user) {
         return res.status(404).send({ message: "User not found" });
         }
  
-        if( await checkIfAllowed(req.query.adminId ) ) {
-            return res.status(403).send({ message: "You can't update this user" });
-        }
         
         const updatedUser = await User.findOneAndUpdate(
         { _id: req.params.userId },
@@ -98,16 +94,12 @@ router.put("/:userId", authenticateToken, async (req, res) => {
 
 
 /**
-Post user: /users?adminId=adminId
+Post user: /users
 */
 
-router.post("/", authenticateToken, async (req, res) => {
+router.post("/", authenticateToken, authorizeRole(ACCESS_CONTROL.POST_USER), async (req, res) => {
     try {
         const newUser = new User(req.body);
-
-        if( await checkIfAllowed(req.query.adminId) ) {
-            return res.status(403).send({ message: "You can't update this user" });
-        }
 
         const savedUser = await newUser.save();
 
@@ -123,19 +115,15 @@ router.post("/", authenticateToken, async (req, res) => {
 
 
 /**
-Delete user: /users/:userId?adminId=adminId
+Delete user: /users/:userId
  */
 
-router.delete("/:userId", authenticateToken, async (req, res) => {
+router.delete("/:userId", authenticateToken, authorizeRole(ACCESS_CONTROL.DELETE_USER), async (req, res) => {
     try {
         const user = await User.findById(req.params.userId);
 
         if (!user) {
         return res.status(404).send({ message: "User not found" });
-        }
-
-        if( await checkIfAllowed(req.query.adminId) ) {
-            return res.status(403).send({ message: "You can't delete this user" });
         }
 
         await User.deleteOne(user._id);
@@ -152,14 +140,6 @@ router.delete("/:userId", authenticateToken, async (req, res) => {
 
 
 
-const checkIfAllowed = async (userId, rolesAllowed = ["Admin"] ) => {
-    try {
-    const user = await User({ _id: userId });
-    return rolesAllowed.includes(user.accessRole);
-    } catch (error) {
-        throw error;
-    }
-}
 
 
 const createLog = async (action, details, user, performedBy = "Admin") => {

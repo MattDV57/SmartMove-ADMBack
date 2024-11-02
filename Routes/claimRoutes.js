@@ -2,13 +2,15 @@ import express from "express";
 import { Claim } from "../Models/claimModel.js";
 import { Chat } from "../Models/chatModel.js";
 import logAction from "../utils/logger.js";
-import authenticateToken from "../utils/jwtChecker.js";
+import authenticateToken from "../Middlewares/jwtChecker.js";
+import { authorizeRole } from "../Middlewares/authorizeRole.js";
+import { ACCESS_CONTROL, INTERNAL_ROLES } from "../utils/PERMISSIONS.js";
 
 const router = express.Router();
 
 
 // Get all claims
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/", authenticateToken, authorizeRole(ACCESS_CONTROL.GET_ALL_CLAIMS), async (req, res) => {
   try {
     const { foundClaimsPaginated, totalClaims } = await getPaginatedClaims(req);
 
@@ -20,15 +22,15 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 // Get my claims
-router.get(
-  "/operators/:assignedOperator",
-  authenticateToken,
-  async (req, res) => {
+router.get("/involved/:username", authenticateToken, authorizeRole(ACCESS_CONTROL.GET_MY_CLAIMS), async (req, res) => {
     try {
-      const { foundClaimsPaginated, totalClaims } = await getPaginatedClaims(
-        req,
-        { assignedOperator: req.params.assignedOperator }
-      );
+      console.log(Object.values(INTERNAL_ROLES), Object.values(INTERNAL_ROLES).includes(req.user.accessRole), req.user.accessRole
+    , req.params.username)
+      const filter = Object.values(INTERNAL_ROLES).includes(req.user.accessRole)
+        ? { assignedOperator: req.params.username }
+        : { "user.username": req.params.username }
+
+      const { foundClaimsPaginated, totalClaims } = await getPaginatedClaims( req, filter);
 
       return res.status(200).send({ foundClaimsPaginated, totalClaims });
     } catch (error) {
@@ -48,7 +50,7 @@ const getPaginatedClaims = async (req, filter = {}) => {
     // Necessary for pagination in DataGrid, 2x(ms) with this
     const totalClaims = await Claim.countDocuments({
       caseType,
-      assignedOperator: req.params.assignedOperator,
+      ...filter
     });
 
     const foundClaimsPaginated = await Claim.aggregate([
@@ -65,7 +67,7 @@ const getPaginatedClaims = async (req, filter = {}) => {
 };
 
 // Get dashboard data
-router.get("/dashboard", authenticateToken, async (req, res) => {
+router.get("/dashboard", authenticateToken, authorizeRole(ACCESS_CONTROL.GET_DASHBOARD), async (req, res) => {
   try {
     const today = new Date();
     const startOfWeek = new Date(
@@ -129,7 +131,7 @@ router.get("/dashboard", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/", authenticateToken, async (req, res) => {
+router.post("/", authenticateToken, authorizeRole(ACCESS_CONTROL.POST_CLAIM), async (req, res) => {
   try {
     const createdChat = await Chat.create({});
     const createdChatId = createdChat._id.toString();
@@ -146,7 +148,7 @@ router.post("/", authenticateToken, async (req, res) => {
   }
 });
 
-router.put("/:claimId", authenticateToken, async (req, res) => {
+router.put("/:claimId", authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_CLAIM), async (req, res) => {
   try {
     const updatedClaim = await Claim.findOneAndUpdate(
       {
@@ -196,7 +198,7 @@ router.put("/:claimId/assign-chat", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/:claimId/chat", authenticateToken, async (req, res) => {
+router.get("/:claimId/chat", authenticateToken, authorizeRole(ACCESS_CONTROL.GET_CHAT_HISTORY), async (req, res) => {
   try {
     const foundClaim = await Claim.findById(req.params.claimId);
     if (!foundClaim) {

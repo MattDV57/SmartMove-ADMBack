@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   position: { type: String },
   department: { type: String },
   password: { type: String, default: "admin" },
-  accessRole: { type: String, 
+  accessRole: { type: String,
     default: "Soporte", 
     enum:["Admin", "Soporte", "Gerente"] },
     
