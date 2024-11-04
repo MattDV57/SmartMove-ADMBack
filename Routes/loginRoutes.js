@@ -19,25 +19,28 @@ router.post("/", async (req, res) => {
       return res.status(404).send({ message: "User not found" });
     }
 
-    const accessToken = jsonwebtoken.sign(
-      {
-        userId: user._id,
-        email: user.email,
-        username: user.username,
-        accessRole: user.accessRole
-      },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "24h" }
-    );
-
     const USER_PERMISSIONS = {};
 
     Object.entries(ACCESS_CONTROL).forEach(([method, requiredRoles]) => {
         return USER_PERMISSIONS[method] = requiredRoles.includes(user.accessRole);
       }
     )
+
+    const accessToken = jsonwebtoken.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        username: user.username,
+        accessRole: user.accessRole,
+        USER_PERMISSIONS
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "24h" }
+    );
+
     
-    res.status(200).send({ accessToken, ...user._doc, USER_PERMISSIONS });
+    
+    res.status(200).send({ accessToken, ...user._doc });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
