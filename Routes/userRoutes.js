@@ -80,8 +80,6 @@ router.put("/:userId", authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_USER)
         { new: true }
         );
 
-        console.log(updatedUser)
-
         await createLog("Put", "Usuario modificado", user.username);
     
         return res.status(200).send(updatedUser._id);

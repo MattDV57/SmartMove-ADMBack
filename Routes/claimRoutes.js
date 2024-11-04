@@ -24,8 +24,6 @@ router.get("/", authenticateToken, authorizeRole(ACCESS_CONTROL.GET_ALL_CLAIMS),
 // Get my claims
 router.get("/involved/:username", authenticateToken, authorizeRole(ACCESS_CONTROL.GET_MY_CLAIMS), async (req, res) => {
     try {
-      console.log(Object.values(INTERNAL_ROLES), Object.values(INTERNAL_ROLES).includes(req.user.accessRole), req.user.accessRole
-    , req.params.username)
       const filter = Object.values(INTERNAL_ROLES).includes(req.user.accessRole)
         ? { assignedOperator: req.params.username }
         : { "user.username": req.params.username }
