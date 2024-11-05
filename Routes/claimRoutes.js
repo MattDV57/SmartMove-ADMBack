@@ -1,7 +1,6 @@
 import express from "express";
 import { Claim } from "../Models/claimModel.js";
 import { Chat } from "../Models/chatModel.js";
-import logAction from "../utils/logger.js";
 import authenticateToken from "../Middlewares/jwtChecker.js";
 import { authorizeRole } from "../Middlewares/authorizeRole.js";
 import { ACCESS_CONTROL, INTERNAL_ROLES } from "../utils/PERMISSIONS.js";
@@ -156,17 +155,17 @@ router.put("/:claimId", authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_CLAI
       { new: true }
     );
 
-    const createLog = updatedClaim ? ["Resuelto", "Cerrado"].includes(updatedClaim.status) : false;
+    // const createLog = updatedClaim ? ["Resuelto", "Cerrado"].includes(updatedClaim.status) : false;
 
-    if (createLog) {
-      await logAction(
-        req.params.claimId,
-        updatedClaim.status,
-        updatedClaim.caseType + " " + updatedClaim.status,
-        req.body.user.username || "Soporte",
-        "Soporte" // admin solo haria CRUD de user, no participa de reclamos
-      );
-    }
+    // if (createLog) {
+    //   await logAction(
+    //     req.params.claimId,
+    //     updatedClaim.status,
+    //     updatedClaim.caseType + " " + updatedClaim.status,
+    //     req.body.user.username || "Soporte",
+    //     "Soporte" // admin solo haria CRUD de user, no participa de reclamos
+    //   );
+    // }
 
     return res.status(200).send(updatedClaim);
   } catch (error) {

@@ -10,8 +10,9 @@ const router = express.Router();
 
 
 //TODO: Integration with ldap.
-//TODO: Middleware for admin req with groups of ldap.
-//TODO: Middleware for creating logs.
+
+const MODULE_EMITTER = "Admin. Interna"
+
 
 /** 
 Get all users: /users?page=1&limit=10 
@@ -80,7 +81,7 @@ router.put("/:userId", authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_USER)
         { new: true }
         );
 
-        await createLog("Put", "Usuario modificado", user.username);
+        await createLog(`Usuario modificado: ${updatedUser.username}`, MODULE_EMITTER, req.user.username);
     
         return res.status(200).send(updatedUser._id);
     } catch (error) {
@@ -101,7 +102,7 @@ router.post("/", authenticateToken, authorizeRole(ACCESS_CONTROL.POST_USER), asy
 
         const savedUser = await newUser.save();
 
-        await createLog("Created", "Usuario creado", savedUser.username);
+        await createLog(`Usuario creado: ${savedUser.username}`, MODULE_EMITTER, req.user.username);
 
         return res.status(201).send(savedUser._id);
 
@@ -126,7 +127,7 @@ router.delete("/:userId", authenticateToken, authorizeRole(ACCESS_CONTROL.DELETE
 
         await User.deleteOne(user._id);
 
-        await createLog("Delete", "Usuario eliminado", user.usename);
+        await createLog(`Usuario eliminado: ${user.username}`, MODULE_EMITTER, req.user.username);
 
 
         return res.status(200).send({ message: "User deleted" });
@@ -140,9 +141,9 @@ router.delete("/:userId", authenticateToken, authorizeRole(ACCESS_CONTROL.DELETE
 
 
 
-const createLog = async (action, details, user, performedBy = "Admin") => {
+const createLog = async (eventType, moduleEmitter, performedBy) => {
     try {
-        await logAction(new ObjectId(), action, details, user, performedBy)
+        await logAction(eventType, moduleEmitter, performedBy)
     } catch (error) {
         throw error;
     }

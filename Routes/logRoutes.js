@@ -41,6 +41,7 @@ router.get("/", authenticateToken, authorizeRole(ACCESS_CONTROL.GET_LOGS), async
       currentPage: pageNumber,
       logs: foundLogs,
     });
+    
   } catch (error) {
     console.error("Error fetching logs:", error);
     return res.status(500).json({ message: "Error fetching logs" });
