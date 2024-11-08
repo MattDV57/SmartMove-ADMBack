@@ -1,5 +1,4 @@
 import "dotenv/config";
-
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -7,8 +6,8 @@ import { Server } from "socket.io";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import http from "http";
-
-import chatRoutes from "./Routes/chatRoutes.js";
+import cookieParser from "cookie-parser";
+// import chatRoutes from "./Routes/chatRoutes.js";
 import claimRoutes from "./Routes/claimRoutes.js";
 import loginRoutes from "./Routes/loginRoutes.js";
 import whatsAppRoutes from "./Routes/whatsappRoutes.js";
@@ -19,21 +18,24 @@ import socketHandler from "./Sockets/socketHandler.js";
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
-//Aceptar CORS para que se pueda llamar desde app externa
-app.use(cors());
 
-// Get the directory name of the current module
+app.use(cors({
+  origin: true,
+  credentials: true}));
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-// Publish page for testing socket.io chat
+
 app.use(express.static(join(__dirname, "public")));
 
 const server = http.createServer(app);
 const io = new Server(server); // Inicializar socket.io
 
-//Definicion base de las rutas
-app.use("/chat", chatRoutes);
+
+// app.use("/chat", chatRoutes);
 app.use("/claim", claimRoutes);
 app.use("/login", loginRoutes);
 app.use("/whatsapp", whatsAppRoutes);
@@ -41,7 +43,7 @@ app.use("/auth", authRoutes);
 app.use("/log", logRoutes);
 app.use("/users", userRoutes);
 
-// Listen for connections in socket.io
+
 socketHandler(io);
 
 mongoose

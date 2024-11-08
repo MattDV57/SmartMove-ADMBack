@@ -1,31 +1,27 @@
-
-
-const LEGAL_EVENTS = {
-    CONTRACT_SIGNED: "contractSigned",
+export const INPUT_EVENTS = {
+    LEGAL: {
+        CONTRACT_SIGNED: "contractSigned",
+    },
+    ACCOUNTING: {
+        PAYMENT_MADE: "paymentMade",
+    },
+    REAL_ESTATE: {
+        PROPERTY_LISTED: "propertyListed",
+    },
+    USER: {
+        USER_CREATED: "userCreated",
+        CLAIM_CREATED: "claimCreated",
+    },
+    LOGISTICS: {
+        MOVE_SCHEDULED: "moveScheduled",
+    }
 };
-  
-const ACCOUNTING_EVENTS = {
-    PAYMENT_MADE: "paymentMade",
-};
 
-const REAL_ESTATE_EVENTS = {
-    PROPERTY_LISTED: "propertyListed",
-};
-
-const USER_EVENTS = {
-    USER_CREATED: "userCreated",
-    CLAIM_CREATED: "claimCreated"
-};
-
-const LOGISTICS_EVENTS = {
-    MOVE_SCHEDULED: "moveScheduled",
-};
-  
-
-export default {
-    LEGAL_EVENTS,
-    ACCOUNTING_EVENTS,
-    REAL_ESTATE_EVENTS,
-    USER_EVENTS,
-    LOGISTICS_EVENTS,
+export const OUTPUT_EVENTS = {
+    ANALITYCS: {
+        ADMIN_CREATED: "adminCreated",
+        ADMIN_UPDATED: "adminUpdated",
+        ADMIN_DELETED: "adminDeleted",
+        CLAIM_UPDATED: "claimUpdated",
+    }
 };

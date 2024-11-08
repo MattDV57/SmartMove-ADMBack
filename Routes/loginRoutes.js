@@ -32,15 +32,20 @@ router.post("/", async (req, res) => {
         email: user.email,
         username: user.username,
         accessRole: user.accessRole,
-        USER_PERMISSIONS
       },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "24h" }
     );
 
+    res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: false, 
+        maxAge: 24 * 60 * 60 * 1000, // Expira en 24 horas
+        sameSite: "strict"
+    })
     
     
-    res.status(200).send({ accessToken, ...user._doc });
+    res.status(200).send({ ...user._doc, USER_PERMISSIONS });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
