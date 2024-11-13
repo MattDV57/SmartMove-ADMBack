@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const chatSchema = new mongoose.Schema(
   {
@@ -7,12 +7,12 @@ const chatSchema = new mongoose.Schema(
       {
         from: { type: String, required: true },
         body: { type: String, required: true },
-        timestamp: { type: Date, default: Date.now },
-      },
+        timestamp: { type: Date, default: Date.now }
+      }
     ],
-    active: { type: Boolean, default: true },
+    active: { type: Boolean, default: true }
   },
-  { collection: "Chats" }
-);
+  { collection: 'Chats' }
+)
 
-export const Chat = mongoose.model("Chat", chatSchema);
+export const Chat = mongoose.model('Chat', chatSchema)
