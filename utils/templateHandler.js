@@ -20,9 +20,9 @@ const messageTemplateCodeWords = {
   "Pago no recibido": "servidores_estado_caido",
   "No puedo enviar pago": "servidores_estado_caido",
   "Realizar queja": "servidores_estado_caido",
-  "Mal servicio": "servidores_estado_caido",
-  "Mal soporte": "servidores_estado_caido",
-  "Mala experiencia": "servidores_estado_caido",
+  "Mal servicio": "reclamo_registrado",
+  "Mal soporte": "reclamo_registrado",
+  "Mala experiencia": "reclamo_registrado",
 
   //Botones de soporte técnico
   "Soporte técnico": "ayuda_soporte",
