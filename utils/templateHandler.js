@@ -25,9 +25,9 @@ const messageTemplateCodeWords = {
   "Mala experiencia": "servidores_estado_caido",
 
   //Botones de soporte técnico
-  "Soporte técnico": "servidores_estado_caido",
-  "No puedo registrarme": "servidores_estado_caido",
-  "No puedo ingresar": "servidores_estado_caido",
+  "Soporte técnico": "ayuda_soporte",
+  "Problema al ingresar": "servidores_estado_caido",
+  "No puedo ingresar": "ayuda_ingresar",
   "Sitio web no funciona": "servidores_estado_funcionando",
 };
 
