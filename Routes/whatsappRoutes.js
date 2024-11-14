@@ -122,27 +122,14 @@ router.post("/testTemplate", async (req, res) => {
 router.post("/webhook", async (req, res) => {
   try {
     if (req.body.entry[0].changes[0].value.statuses != undefined) {
-      console.log("found statuses and leaving");
       return res.status(200).send();
     }
 
     const reqBody = req.body;
-    console.log("LOGGING INFO OF RESPONSE");
-    console.log(reqBody);
-    console.log("ENTRIES:");
-    console.log(reqBody.entry[0]);
-    console.log(reqBody.entry[0].changes);
-    console.log(reqBody.entry[0].changes[0]);
     let hasStatuses = false;
     if (reqBody.entry[0].changes[0].value.statuses != undefined) {
-      console.log(reqBody.entry[0].changes[0].value.statuses[0]);
-      console.log("HAS STATUSES");
       hasStatuses = true;
     }
-    console.log("MESSAGES:");
-    console.log(reqBody.entry[0].changes[0].value.messages);
-    console.log(reqBody.entry[0].changes[0].value.messages[0]);
-    console.log("LOGGED INFO OF RESPONSE");
     if (reqBody.object && !hasStatuses) {
       if (reqBody.entry[0].changes[0].value) {
         if (reqBody.entry[0].changes[0].value.messages[0].button != undefined) {
@@ -164,9 +151,6 @@ router.post("/webhook", async (req, res) => {
                 phoneNumber
               );
             }
-            console.log("IS MESSAGE NULL: " + messageToSend == null);
-            console.log(response);
-            console.log(response.data);
           }
         }
         if (

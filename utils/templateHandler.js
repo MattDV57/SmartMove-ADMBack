@@ -13,9 +13,9 @@ const messageTemplateCodeWords = {
   "Link de pago no funciona": "reclamo_registrado",
   "Pago no puede enviarse": "reclamo_registrado",
   "Maltrato personal": "servidores_estado_caido",
-  Queja: "servidores_estado_caido",
+  Queja: "menu_queja",
   "Intento de estafa": "servidores_estado_caido",
-  "Oferta engañosa": "servidores_estado_caido",
+  "Oferta engañosa": "reclamo_registrado",
   "Problema con pagos": "servidores_estado_caido",
   "Pago no recibido": "servidores_estado_caido",
   "No puedo enviar pago": "servidores_estado_caido",
@@ -26,8 +26,7 @@ const messageTemplateCodeWords = {
 
   //Botones de soporte técnico
   "Soporte técnico": "ayuda_soporte",
-  "Problema al ingresar": "servidores_estado_caido",
-  "No puedo ingresar": "ayuda_ingresar",
+  "Problema al ingresar": "ayuda_ingresar",
   "Sitio web no funciona": "servidores_estado_funcionando",
 };
 
