@@ -6,6 +6,7 @@ import { Server } from 'socket.io'
 import { createServer } from 'http'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { pollQueue } from './events/sqsConsumer.js'
 
 import cookieParser from 'cookie-parser'
 // import chatRoutes from "./Routes/chatRoutes.js";
@@ -49,6 +50,8 @@ app.use('/log', logRoutes)
 app.use('/users', userRoutes)
 
 socketHandler(io)
+
+pollQueue();
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING2)

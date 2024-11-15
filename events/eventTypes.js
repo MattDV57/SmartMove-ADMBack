@@ -11,7 +11,7 @@ export const INPUT_EVENTS = {
     LOG_PROPERTY_LISTED: 'PublicacionCreada'
   },
   USER: {
-    LOG_USER_CREATED: 'userCreated',
+    LOG_USER_CREATED: 'UsuarioCreado',
     CLAIM_CREATED: 'ReclamoCreado'
   },
   LOGISTICS: {
