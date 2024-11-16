@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
   accessRole: {
     type: String,
     default: 'Soporte',
-    enum: ['Admin', 'Soporte', 'Gerente']
+    enum: ['Admin', 'Soporte', 'CEO']
   }
 
 })
