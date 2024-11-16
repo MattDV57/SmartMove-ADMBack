@@ -19,7 +19,7 @@ export const processEvent = async (event) => {
     case `${INPUT_EVENTS.ACCOUNTING.LOG_PAYMENT_MADE}`:
       await handlePaymentMade(payload);
       break;
-    // Añade más casos para los demás eventos de INPUT_EVENTS y OUTPUT_EVENTS
+
     default:
       console.warn(`No hay un handler definido para el evento: ${eventName}`);
   }

@@ -1,13 +1,8 @@
-import AWS from 'aws-sdk';
-import 'dotenv/config'
+import { EventBridgeClient } from "@aws-sdk/client-eventbridge";
+import { configClient } from "./configClient";
 
-const eventBridge = new EventBridgeClient({
-  region: 'us-east-1', 
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID, 
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,  
-  },
-});
+
+const eventBridge = new EventBridgeClient(configClient);
 
 const emitEvent = async ({ source, eventType, eventBusName, payload }) => {
   const eventName = `${source}_${eventType}`; 
