@@ -33,19 +33,13 @@ const socketHandler = (io) => {
         }
 
         const isInChat = socket.rooms.has(chat);
-        console.log("Is in chat: ", chat);
-        console.log(isInChat);
 
         const chatFound = await Chat.findById(chat);
 
         socket.join(chat);
-        console.log("Is in chat: ", chat);
-        console.log(socket.rooms.has(chat));
 
         //Test chat ID: 66f091b26118976325f929cd
         if (chatFound && chatFound.messages && chatFound.messages.length > 0) {
-          console.log("Chat found: ", chatFound.messages.length);
-          console.log("IS USER IN CHAT:", socket.rooms.has(chat));
           chatFound.messages.map((message) => {
             socket.emit("message", message);
           });
@@ -69,19 +63,10 @@ const socketHandler = (io) => {
           sender: sender,
         };
 
-        console.log("Received message: ", newMessage);
-        console.log("From:", from);
-        console.log("Chat ID:", chatId);
-
         const chat = await Chat.findById(chatId);
         if (!chat || !chat.active) {
-          console.log("CHAT FOUND: ", chat);
-          console.log("IS ACTIVE:", chat.active);
           return;
         }
-
-        console.log("CHAT FOUND: ", chat);
-        console.log("IS ACTIVE:", chat.active);
 
         const updatedChat = await Chat.findOneAndUpdate(
           { _id: chatId }, // Find the chat document by its ObjectId
