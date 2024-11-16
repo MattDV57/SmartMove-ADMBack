@@ -1,23 +1,26 @@
 export const INPUT_EVENTS = {
+  LOGS: {
+    LEGAL: ['ContratoFirmado'],
+    ACCOUNTING: ['PagoMudanzaRealizada'],
+    REAL_ESTATE: ['PublicacionCreada'],
+    USER: ['UsuarioCreado'],
+    LOGISTICS: ['MudanzaSolicitada'],
+  },
   LEGAL: {
-    LOG_CONTRACT_SIGNED: 'contractSigned',
     REQUEST_CONTRACT_CANCELATION: 'SolicitudCancelacionContratoCreada'
-
   },
   ACCOUNTING: {
-    LOG_PAYMENT_MADE: 'PagoMudanzaRealizada'
   },
   REAL_ESTATE: {
-    LOG_PROPERTY_LISTED: 'PublicacionCreada'
   },
   USER: {
-    LOG_USER_CREATED: 'UsuarioCreado',
     CLAIM_CREATED: 'ReclamoCreado'
   },
   LOGISTICS: {
-    LOG_MOVE_SCHEDULED: 'MudanzaSolicitada'
   }
+  
 }
+
 
 export const OUTPUT_EVENTS = {
   ANALITYCS: {
@@ -27,4 +30,14 @@ export const OUTPUT_EVENTS = {
     CLAIM_UPDATED: 'ReclamoModificado',
     CONFIRM_CONTRACT_CANCELATION: 'ConfirmarCancelacionContrato' // Legales
   }
+}
+
+
+export const MODULE_NAME_MAP  = {
+  USER: "Usuarios",
+  LEGAL: "Legales",
+  ACCOUNTING: "Contable",
+  REAL_ESTATE: "Inmuebles",
+  LOGISTICS: "Logística",
+  ANALITYCS: "Analítica"
 }

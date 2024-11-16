@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const logSchema = new mongoose.Schema({
-  timestamp: { type: Date, default: Date.now },
+  timestamp: { type: Date },
   eventType: { type: String },
   moduleEmitter: { type: String },
   performedBy: { type: String }

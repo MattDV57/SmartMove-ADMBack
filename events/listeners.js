@@ -1,53 +1,61 @@
 // listeners.js
 import { Log } from '../Models/logModel.js';
-import { INPUT_EVENTS, OUTPUT_EVENTS } from './eventTypes.js';
+import { INPUT_EVENTS, MODULE_NAME_MAP } from './eventTypes.js';
 
 
-export const processEvent = async (event) => {
-  const { eventName, payload } = JSON.parse(event.Body);
-    console.log("Proccesing event...")
-  switch (eventName) {
-    case `${INPUT_EVENTS.USER.LOG_USER_CREATED}`:
-      await handleUserCreated(payload);
-      break;
+export const processEvent = async (rawEvent) => {
+  const body = JSON.parse(rawEvent.Body);
+
+  console.log("Proccesing event...")
+
+  const event = { name: body['detail-type'], timestamp: body.time, data: body.detail };
+
+  const { module, eventType } = findModuleAndEventType(event.name);
+
+  if (eventType === 'LOGS') {
+    await handleCreateLog(event, module);
+    return;
+  }
+
+  switch (event.name) {
     case `${INPUT_EVENTS.USER.CLAIM_CREATED}`:
-      await handleClaimCreated(payload);
+      await handleClaimCreated(event);
       break;
-    case `${INPUT_EVENTS.LEGAL.LOG_CONTRACT_SIGNED}`:
-      await handleContractSigned(payload);
-      break;
-    case `${INPUT_EVENTS.ACCOUNTING.LOG_PAYMENT_MADE}`:
-      await handlePaymentMade(payload);
+    case `${INPUT_EVENTS.LEGAL.REQUEST_CONTRACT_CANCELATION}`:
+      await handleRequestContractCancelation(event);
       break;
 
     default:
-      console.warn(`No hay un handler definido para el evento: ${eventName}`);
+      console.warn(`No hay un handler definido para el evento: ${event.name}`);
   }
 };
 
 
-const handleUserCreated = async (data) => {
-  console.log("Procesando evento de Usuario Creado:", data);
+const findModuleAndEventType = (eventName) => {
+  for (const [module, events] of Object.entries(INPUT_EVENTS.LOGS)) {
+    if (events.includes(eventName)) {
+      return { module, eventType: "LOGS" };
+    }
+  }
+  return { module: '', eventType: "OTHER" };
+}
+
+const handleCreateLog = async (event, module) => {
   await Log.create({
-    eventType: `${INPUT_EVENTS.USER.LOG_USER_CREATED}`,
-    moduleEmitter: "Usuarios",
-    performedBy: userData.createdBy || 'Nuevo usuario'
+    eventType: event.name,
+    moduleEmitter:  MODULE_NAME_MAP[module],
+    performedBy: event.data?.performedBy || 'Anonimo',
+    timestamp: event.timestamp
   })
+}
+
+
+const handleClaimCreated = async (event) => {
+  console.log("Procesando evento de Reclamo Creado:", event);
 
 };
 
-const handleClaimCreated = async (data) => {
-  console.log("Procesando evento de Reclamo Creado:", data);
-
-};
-
-
-const handleContractSigned = async (data) => {
-  console.log("Procesando evento de Contrato Firmado:", data);
-
-};
-
-const handlePaymentMade = async (data) => {
-  console.log("Procesando evento de Pago Realizado:", data);
+const handleRequestContractCancelation = async (event) => {
+  console.log("Procesando evento de Contrato Firmado:", event);
 
 };
