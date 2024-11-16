@@ -8,6 +8,7 @@ WORKDIR /home/node/app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
+
 # Install  
 RUN npm install
 
