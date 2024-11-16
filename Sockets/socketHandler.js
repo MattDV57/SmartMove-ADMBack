@@ -47,7 +47,7 @@ const socketHandler = (io) => {
           console.log("Chat found: ", chatFound.messages.length);
           console.log("IS USER IN CHAT:", socket.rooms.has(chat));
           chatFound.messages.map((message) => {
-            socket.emit("message", `${message.from}: ${message.body}`);
+            socket.emit("message", message);
           });
         }
       } catch (error) {
@@ -58,7 +58,7 @@ const socketHandler = (io) => {
     // Handle sending messages to a room
     socket.on("chatMessage", async (messageObject) => {
       try {
-        const { body, from, chatId } = messageObject;
+        const { body, from, sender, chatId } = messageObject;
         if (!isValidObjectId(chatId)) {
           //ChatId is not a Mongo object Id, it doesnt exist
           return;
@@ -66,6 +66,7 @@ const socketHandler = (io) => {
         const newMessage = {
           from: from,
           body: body,
+          sender: sender,
         };
 
         console.log("Received message: ", newMessage);
@@ -92,7 +93,7 @@ const socketHandler = (io) => {
           console.log(updatedChat);
           console.log(socket.rooms.has(chatId));
           socket.join(chatId);
-          io.to(chatId).emit("message", `${from}: ${body}`);
+          io.to(chatId).emit("message", newMessage);
         }
       } catch (error) {
         console.log(error);
