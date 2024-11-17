@@ -15,9 +15,12 @@ export const pollQueue = async () => {
   const pollMessages = async () => {
     try {
       const command = new ReceiveMessageCommand(params);
-      console.log("COMMANDDDDDd", command)
       const response = await sqsClient.send(command); 
+
       console.log("RESPONSE", response)
+
+      console.log("IS QUEUE EMPTY?", response.Messages === undefined)
+    
       if (!response) return
 
       if (response.Messages) {

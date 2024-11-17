@@ -1,21 +1,22 @@
-import "dotenv/config";
-import express from "express";
-import mongoose from "mongoose";
-import cors from "cors";
-import { Server } from "socket.io";
-import { createServer } from "http";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import 'dotenv/config'
+import express from 'express'
+import mongoose from 'mongoose'
+import cors from 'cors'
+import { Server } from 'socket.io'
+import { createServer } from 'http'
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
+import { pollQueue } from './events/sqsConsumer.js'
 
 import cookieParser from "cookie-parser";
 // import chatRoutes from "./Routes/chatRoutes.js";
-import claimRoutes from "./Routes/claimRoutes.js";
-import loginRoutes from "./Routes/loginRoutes.js";
-import whatsAppRoutes from "./Routes/whatsappRoutes.js";
-import authRoutes from "./Routes/authRoutes.js";
-import logRoutes from "./Routes/logRoutes.js";
-import userRoutes from "./Routes/userRoutes.js";
-import socketHandler from "./Sockets/socketHandler.js";
+import claimRoutes from './routes/claimRoutes.js'
+import loginRoutes from './routes/loginRoutes.js'
+import whatsAppRoutes from './routes/whatsappRoutes.js'
+import authRoutes from './routes/authRoutes.js'
+import logRoutes from './routes/logRoutes.js'
+import userRoutes from './routes/userRoutes.js'
+import socketHandler from './sockets/socketHandler.js'
 
 const app = express();
 app.use(express.json());
@@ -50,7 +51,9 @@ app.use("/auth", authRoutes);
 app.use("/log", logRoutes);
 app.use("/users", userRoutes);
 
-socketHandler(io);
+socketHandler(io)
+
+// pollQueue();
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING)

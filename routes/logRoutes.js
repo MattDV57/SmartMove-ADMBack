@@ -1,8 +1,8 @@
 import "dotenv/config";
 import express from "express";
-import { Log } from "../Models/logModel.js";
-import authenticateToken from "../Middlewares/jwtChecker.js";
-import { authorizeRole } from "../Middlewares/authorizeRole.js";
+import { Log } from "../models/logModel.js";
+import authenticateToken from "../middlewares/jwtChecker.js";
+import { authorizeRole } from "../middlewares/authorizeRole.js";
 import { ACCESS_CONTROL } from "../utils/PERMISSIONS.js";
 
 const router = express.Router();

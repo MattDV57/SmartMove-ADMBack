@@ -3,8 +3,8 @@ import "dotenv/config";
 import express from "express";
 import axios from "axios";
 
-import { Claim } from "../Models/claimModel.js";
-import { Chat } from "../Models/chatModel.js";
+import { Claim } from "../models/claimModel.js";
+import { Chat } from "../models/chatModel.js";
 import getTemplateByCode from "../utils/templateHandler.js";
 
 const router = express.Router();

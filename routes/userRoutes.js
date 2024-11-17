@@ -1,10 +1,12 @@
 import 'dotenv/config'
 import express from 'express'
-import { User } from '../Models/userModel.js'
-import authenticateToken from '../Middlewares/jwtChecker.js'
-import logAction from '../utils/logger.js'
-import { authorizeRole } from '../Middlewares/authorizeRole.js'
+import { User } from '../models/userModel.js'
+import authenticateToken from '../middlewares/jwtChecker.js'
+import { authorizeRole } from '../middlewares/authorizeRole.js'
 import { ACCESS_CONTROL } from '../utils/PERMISSIONS.js'
+import { emitAdminEvent } from '../events/emitters.js'
+import { OUTPUT_EVENTS } from '../events/eventNames.js'
+import { Log } from '../models/logModel.js'
 const router = express.Router()
 
 // TODO: Integration with ldap.
@@ -73,7 +75,9 @@ router.put('/:userId', authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_USER)
       { new: true }
     )
 
-    await createLog(`Usuario modificado: ${updatedUser.username}`, MODULE_EMITTER, req.user.username)
+    if (savedUser.accessRole = "Admin") {
+      await emitAdminEvent(savedUser, OUTPUT_EVENTS.ADMIN_UPDATED);
+    }
 
     return res.status(200).send(updatedUser._id)
   } catch (error) {
@@ -92,7 +96,9 @@ router.post('/', authenticateToken, authorizeRole(ACCESS_CONTROL.POST_USER), asy
 
     const savedUser = await newUser.save()
 
-    await createLog(`Usuario creado: ${savedUser.username}`, MODULE_EMITTER, req.user.username)
+    if (savedUser.accessRole === 'Admin') {
+      await handleAdminCRUD(savedUser, OUTPUT_EVENTS.ADMIN_CREATED, req.user.username)
+    }
 
     return res.status(201).send(savedUser._id)
   } catch (error) {
@@ -115,7 +121,9 @@ router.delete('/:userId', authenticateToken, authorizeRole(ACCESS_CONTROL.DELETE
 
     await User.deleteOne(user._id)
 
-    await createLog(`Usuario eliminado: ${user.username}`, MODULE_EMITTER, req.user.username)
+    if (user.accessRole === 'Admin') {
+      await handleAdminCRUD(user, OUTPUT_EVENTS.ADMIN_DELETED, req.user.username)
+    }
 
     return res.status(200).send({ message: 'User deleted' })
   } catch (error) {
@@ -124,8 +132,19 @@ router.delete('/:userId', authenticateToken, authorizeRole(ACCESS_CONTROL.DELETE
   }
 })
 
-const createLog = async (eventType, moduleEmitter, performedBy) => {
-  await logAction(eventType, moduleEmitter, performedBy)
+
+
+const handleAdminCRUD = async (userData, eventName, performedBy) => {
+  
+  await emitAdminEvent(userData, eventName);
+
+  await Log.create({
+    eventType: eventName,
+    moduleEmitter: MODULE_EMITTER,
+    performedBy
+  })
+
 }
+
 
 export default router

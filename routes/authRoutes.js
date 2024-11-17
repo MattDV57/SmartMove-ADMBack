@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import jsonwebtoken from "jsonwebtoken";
 // import { authenticateLdapUser } from "../services/ldapService.js";
-import { User } from '../Models/userModel.js';
+import { User } from '../models/userModel.js';
 
 const router = express.Router();
 

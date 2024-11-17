@@ -6,8 +6,8 @@ export const ROLES = {
   },
 
   EXTERNAL_ROLES: {
-    ABOGADO: 'Abogado',
-    RECLAMANTE: 'Reclamante'
+    ABOGADO: 'legales',
+    RECLAMANTE: 'reclamante'
   }
 }
 

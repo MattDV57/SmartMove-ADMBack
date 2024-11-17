@@ -1,9 +1,11 @@
 import express from 'express'
-import { Claim } from '../Models/claimModel.js'
-import { Chat } from '../Models/chatModel.js'
-import authenticateToken from '../Middlewares/jwtChecker.js'
-import { authorizeRole } from '../Middlewares/authorizeRole.js'
+import { Claim } from '../models/claimModel.js'
+import { Chat } from '../models/chatModel.js'
+import authenticateToken from '../middlewares/jwtChecker.js'
+import { authorizeRole } from '../middlewares/authorizeRole.js'
 import { ACCESS_CONTROL, INTERNAL_ROLES } from '../utils/PERMISSIONS.js'
+import { emitClaimEvent } from '../events/emitters.js'
+import { OUTPUT_EVENTS } from '../events/eventNames.js'
 
 const router = express.Router()
 
@@ -150,17 +152,7 @@ router.put('/:claimId', authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_CLAI
       { new: true }
     )
 
-    // const createLog = updatedClaim ? ["Resuelto", "Cerrado"].includes(updatedClaim.status) : false;
-
-    // if (createLog) {
-    //   await logAction(
-    //     req.params.claimId,
-    //     updatedClaim.status,
-    //     updatedClaim.caseType + " " + updatedClaim.status,
-    //     req.body.user.username || "Soporte",
-    //     "Soporte" // admin solo haria CRUD de user, no participa de reclamos
-    //   );
-    // }
+    await emitClaimEvent(updatedClaim, OUTPUT_EVENTS.CLAIM_UPDATED);
 
     return res.status(200).send(updatedClaim)
   } catch (error) {
