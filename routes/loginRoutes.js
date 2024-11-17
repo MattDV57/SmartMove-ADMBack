@@ -37,10 +37,10 @@ router.post("/", async (req, res) => {
     );
 
     res.cookie("accessToken", accessToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false,
       maxAge: 24 * 60 * 60 * 1000, // Expira en 24 horas
-      sameSite: "lax",
+      sameSite: "strict",
     });
 
     res.status(200).send({ ...user._doc, USER_PERMISSIONS });
