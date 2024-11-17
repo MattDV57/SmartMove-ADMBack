@@ -132,11 +132,13 @@ router.post("/webhook", async (req, res) => {
     }
     if (reqBody.object && !hasStatuses) {
       if (reqBody.entry[0].changes[0].value) {
+        //TEMPLATE PATH
         if (reqBody.entry[0].changes[0].value.messages[0].button != undefined) {
           if (
             req.body.entry[0].changes[0].value.messages[0].from !=
             process.env.TEST_PHONE_NUMBER
           ) {
+            console.log("TEMPLATE PATH FROM USER");
             let phoneNumber =
               req.body.entry[0].changes[0].value.messages[0].from;
             if (phoneNumber.startsWith("549")) {
@@ -153,6 +155,7 @@ router.post("/webhook", async (req, res) => {
             }
           }
         }
+        //MESSAGE PATH
         if (
           req.body.entry[0].changes[0].value.messages[0].from !=
           process.env.TEST_PHONE_NUMBER
@@ -163,6 +166,7 @@ router.post("/webhook", async (req, res) => {
           }
           let message =
             req.body.entry[0].changes[0].value.messages[0].text.body;
+          console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
           const messageToSend = await messageFlow(message, phoneNumber);
           if (messageToSend != null) {
             const response = await sendWhatsAppTemplate(
@@ -170,13 +174,10 @@ router.post("/webhook", async (req, res) => {
               phoneNumber
             );
           }
-          console.log("IS MESSAGE NULL: " + messageToSend == null);
-          console.log(response);
-          console.log(response.data);
         }
       }
     } else if (reqBody.entry[0].changes[0].value.statuses[0]) {
-      console.log("STATUSES");
+      console.log("STATUS PATH FROM USER");
       console.log(reqBody.entry[0].changes[0].value.statuses[0]);
       /*let messagesBody = reqBody.value.messages;
       if (messagesBody) {
@@ -201,8 +202,6 @@ router.post("/webhook", async (req, res) => {
 const messageFlow = async (userMessage, userPhoneNumber) => {
   try {
     const templateCode = await getTemplateByCode(userMessage);
-    console.log(templateCode);
-    console.log(typeof templateCode);
     return templateCode;
 
     const foundClaim = await findUserActiveClaim(userPhoneNumber);
