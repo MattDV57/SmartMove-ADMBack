@@ -1,5 +1,5 @@
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
-import { configClient } from './configClient.js';
+import { configClient } from '../configClient.js';
 
 
 const eventBridgeClient = new EventBridgeClient(configClient);

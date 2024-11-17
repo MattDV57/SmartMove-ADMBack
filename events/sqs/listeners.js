@@ -1,6 +1,8 @@
 // listeners.js
-import { Log } from '../models/logModel.js';
-import { INPUT_EVENTS, MODULE_NAME_MAP } from './eventNames.js';
+import { Claim } from '../../models/claimModel.js';
+import { ClaimCreateDTO } from './listenersDto.js';
+import { INPUT_EVENTS, MODULE_NAME_MAP } from '../eventNames.js';
+import { Log } from '../../models/logModel.js';
 
 
 export const processEvent = async (rawEvent) => {
@@ -21,11 +23,9 @@ export const processEvent = async (rawEvent) => {
 
   switch (event.name) {
     case `${INPUT_EVENTS.USER.CLAIM_CREATED}`:
-      //TODO
       await handleClaimCreated(event);
       break;
     case `${INPUT_EVENTS.LEGAL.REQUEST_CONTRACT_CANCELATION}`:
-      //TODO
       await handleRequestContractCancelation(event);
       break;
 
@@ -54,12 +54,21 @@ const handleCreateLog = async (event, module) => {
 }
 
 
-const handleClaimCreated = async (event) => {
-  console.log("Procesando evento de Reclamo Creado:", event);
+export const handleClaimCreated = async (event) => {
+
+  const newClaim = new ClaimCreateDTO(event.data);
+  await Claim.create(newClaim);
 
 };
 
 const handleRequestContractCancelation = async (event) => {
-  console.log("Procesando evento de Contrato Firmado:", event);
+  //TODO contract_id ? Para que? Quieren que les respondamos de forma inmediata? Que generemos una noti?
+  const filter = {'user.username': event.data.username, status: "Abierto" };
+  const hasOpenClaims = Claim.countDocuments([
+    { $match: { ...Filter } }
+  ]) === 0;
 
 };
+
+
+

@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import mongooseSequence from 'mongoose-sequence'
+import { Chat } from './chatModel.js';
 
 const claimSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
@@ -39,8 +40,26 @@ const claimSchema = new mongoose.Schema({
   ],
   resolutionDate: { type: Date },
   resolution: { type: String },
-  relatedChat: { type: String }
-})
+  relatedChat: { type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }
+});
+
+claimSchema.pre('save', async function (next) {
+  if (this.isNew) {
+    try {
+      const newChat = new Chat({
+        messages: [], 
+        active: true, 
+      });
+      const savedChat = await newChat.save();
+      this.relatedChat = savedChat._id;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    next(); 
+  }
+});
 
 claimSchema.plugin(mongooseSequence(mongoose), { inc_field: 'claimNumber' })
 export const Claim = mongoose.model('Claim', claimSchema)
