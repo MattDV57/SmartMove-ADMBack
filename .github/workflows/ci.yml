@@ -37,13 +37,21 @@ jobs:
             --build-arg LDAP_ADMIN_DN='${{ secrets.LDAP_ADMIN_DN }}' \
             --build-arg LDAP_ADMIN_PASSWORD='${{ secrets.LDAP_ADMIN_PASSWORD }}' \
             --build-arg LDAP_URL='${{ secrets.LDAP_URL }}' \
-            --build-arg MONGO_CONNECTION_STRING2='${{ secrets.MONGO_CONNECTION_STRING2 }}' \
+            --build-arg MONGO_CONNECTION_STRING='${{ secrets.MONGO_CONNECTION_STRING }}' \
             --build-arg DATABASE_URL='${{ secrets.DATABASE_URL }}' \
             --build-arg PORT='${{ secrets.PORT }}' \
             --build-arg REFRES_TOKEN_SECRET='${{ secrets.REFRES_TOKEN_SECRET }}' \
             --build-arg TEST_PHONE_NUMBER='${{ secrets.TEST_PHONE_NUMBER }}' \
             --build-arg WHATSAPP_PHONE_ID='${{ secrets.WHATSAPP_PHONE_ID }}' \
             --build-arg WHATSAPP_TOKEN='${{ secrets.WHATSAPP_TOKEN }}' \
+            --build-arg TEST_PHONE_NUMBER='${{ secrets.TEST_PHONE_NUMBER }}' \
+            --build-arg LDAP_URL_SECURE='${{ secrets.LDAP_URL_SECURE }}' \
+            --build-arg LDAP_DN='${{ secrets.LDAP_DN }}' \
+            --build-arg AWS_ACCESS_KEY_ID='${{ secrets.AWS_ACCESS_KEY_ID }}' \
+            --build-arg AWS_SECRET_ACCESS_KEY='${{ secrets.AWS_SECRET_ACCESS_KEY }}' \
+            --build-arg EVENT_BUS_ARN='${{ secrets.EVENT_BUS_ARN }}' \
+            --build-arg SQS_URL='${{ secrets.SQS_URL }}' \
+            --build-arg SQS_ARN='${{ secrets.SQS_ARN }}' \
             --build-arg WHATSAPP_VERIFY_TOKEN='${{ secrets.WHATSAPP_VERIFY_TOKEN }}' .
 
             docker tag smartmoveback mattdv57/smartmoveback:latest

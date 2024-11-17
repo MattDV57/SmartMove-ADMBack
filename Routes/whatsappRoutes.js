@@ -3,12 +3,17 @@ import "dotenv/config";
 import express from "express";
 import axios from "axios";
 
-import { Claim } from "../models/claimModel.js";
-import { Chat } from "../models/chatModel.js";
+import { Claim } from "../Models/claimModel.js";
+import { Chat } from "../Models/chatModel.js";
+import getTemplateByCode from "../utils/templateHandler.js";
 
 const router = express.Router();
 
 const baseClaimBody = {};
+
+//Array para chequear si el comando ingresado existe
+
+//
 
 /*
 messaging_product: "whatsapp",
@@ -50,6 +55,29 @@ const sendWhatsAppMessage = async (message, phone) => {
   }
 };
 
+const sendWhatsAppTemplate = async (templateCode, phone) => {
+  const response = await axios({
+    url: `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    data: {
+      messaging_product: "whatsapp",
+      to: phone,
+      type: "template",
+      template: {
+        name: templateCode,
+        language: {
+          code: "es_AR",
+        },
+      },
+    },
+  });
+  return response;
+};
+
 router.post("/send-message", async (req, res) => {
   try {
     let phone = req.body.phone;
@@ -63,7 +91,7 @@ router.post("/send-message", async (req, res) => {
     return res.status(200).send(response.data);
   } catch (error) {
     console.log(error);
-    return res.status(500).send(error);
+    return res.status(200).send(error);
   }
 });
 
@@ -86,22 +114,71 @@ router.get("/webhook", async (req, res) => {
   }
 });
 
+router.post("/testTemplate", async (req, res) => {
+  let response = await getTemplateByCode(req.body.code);
+  return res.status(200).send(response);
+});
+
 router.post("/webhook", async (req, res) => {
   try {
-    const reqBody = req.body;
+    if (req.body.entry[0].changes[0].value.statuses != undefined) {
+      return res.status(200).send();
+    }
 
-    if (reqBody.object) {
+    const reqBody = req.body;
+    let hasStatuses = false;
+    if (reqBody.entry[0].changes[0].value.statuses != undefined) {
+      hasStatuses = true;
+    }
+    if (reqBody.object && !hasStatuses) {
       if (reqBody.entry[0].changes[0].value) {
-        let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
-        if (phoneNumber.startsWith("549")) {
-          phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
+        if (reqBody.entry[0].changes[0].value.messages[0].button != undefined) {
+          if (
+            req.body.entry[0].changes[0].value.messages[0].from !=
+            process.env.TEST_PHONE_NUMBER
+          ) {
+            let phoneNumber =
+              req.body.entry[0].changes[0].value.messages[0].from;
+            if (phoneNumber.startsWith("549")) {
+              phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
+            }
+            let message =
+              req.body.entry[0].changes[0].value.messages[0].button.text;
+            const messageToSend = await messageFlow(message, phoneNumber);
+            if (messageToSend != null) {
+              const response = await sendWhatsAppTemplate(
+                messageToSend,
+                phoneNumber
+              );
+            }
+          }
         }
-        let message = req.body.entry[0].changes[0].value.messages[0].text.body;
-        const messageToSend = await messageFlow(message, phoneNumber);
-        await sendWhatsAppMessage(messageToSend, phoneNumber);
+        if (
+          req.body.entry[0].changes[0].value.messages[0].from !=
+          process.env.TEST_PHONE_NUMBER
+        ) {
+          let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
+          if (phoneNumber.startsWith("549")) {
+            phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
+          }
+          let message =
+            req.body.entry[0].changes[0].value.messages[0].text.body;
+          const messageToSend = await messageFlow(message, phoneNumber);
+          if (messageToSend != null) {
+            const response = await sendWhatsAppTemplate(
+              messageToSend,
+              phoneNumber
+            );
+          }
+          console.log("IS MESSAGE NULL: " + messageToSend == null);
+          console.log(response);
+          console.log(response.data);
+        }
       }
-    } else {
-      let messagesBody = req.body.value.messages;
+    } else if (reqBody.entry[0].changes[0].value.statuses[0]) {
+      console.log("STATUSES");
+      console.log(reqBody.entry[0].changes[0].value.statuses[0]);
+      /*let messagesBody = reqBody.value.messages;
       if (messagesBody) {
         let phoneNumber = messagesBody[0].from;
         if (phoneNumber.startsWith("549")) {
@@ -110,18 +187,24 @@ router.post("/webhook", async (req, res) => {
         let message = messagesBody[0].text.body;
 
         const messageToSend = await messageFlow(message, phoneNumber);
-        await sendWhatsAppMessage(messageToSend, phoneNumber);
-      }
+        const response = await sendWhatsAppTemplate(messageToSend, phoneNumber);
+        console.log(response);
+      }*/
     }
-    res.status(200).send();
+    return res.status(200).send();
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ message: "Error on server side" });
+    return res.status(200).send({ message: "Error on server side" });
   }
 });
 
 const messageFlow = async (userMessage, userPhoneNumber) => {
   try {
+    const templateCode = await getTemplateByCode(userMessage);
+    console.log(templateCode);
+    console.log(typeof templateCode);
+    return templateCode;
+
     const foundClaim = await findUserActiveClaim(userPhoneNumber);
 
     //Caso 1: El consulta es nuevo
