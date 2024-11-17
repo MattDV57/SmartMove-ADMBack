@@ -75,8 +75,8 @@ router.put('/:userId', authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_USER)
       { new: true }
     )
 
-    if (savedUser.accessRole = "Admin") {
-      await emitAdminEvent(savedUser, OUTPUT_EVENTS.ADMIN_UPDATED);
+    if (updatedUser.accessRole = "Admin") {
+      await emitAdminEvent(updatedUser, OUTPUT_EVENTS.ADMIN_UPDATED);
     }
 
     return res.status(200).send(updatedUser._id)
