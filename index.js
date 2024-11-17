@@ -57,7 +57,6 @@ socketHandler(io)
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING)
-  .connect(process.env.MONGO_CONNECTION_STRING)
   .then(() => {
     server.listen(process.env.PORT, () => {
       console.log("App is running on port = " + process.env.PORT);
