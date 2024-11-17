@@ -36,6 +36,11 @@ const __dirname = dirname(__filename);
 
 app.use(express.static(join(__dirname, "public")));
 
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "default-src https: http:");
+  next();
+});
+
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
