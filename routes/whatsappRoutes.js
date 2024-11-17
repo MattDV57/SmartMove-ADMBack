@@ -151,11 +151,23 @@ router.post("/webhook", async (req, res) => {
               message,
               phoneNumber
             );
-            if (messageToSend != null) {
+            if (messageToSend != null && messageToSend != "chat_en_vivo") {
               const response = await sendWhatsAppTemplate(
                 messageToSend,
                 phoneNumber
               );
+            }
+            if (messageToSend != null && messageToSend == "chat_en_vivo") {
+              console.log("USING IO");
+              const io = req.app.get("socketio");
+
+              testMessage = {
+                from: "user",
+                body: "Un usuario quizo entrar al liveChat",
+                sender: "user",
+              };
+              io.to("672e959b3ff1daf56af0e561").emit("message", testMessage);
+              //672e959b3ff1daf56af0e561
             }
           }
         }
@@ -171,7 +183,8 @@ router.post("/webhook", async (req, res) => {
           let message =
             req.body.entry[0].changes[0].value.messages[0].text.body;
           console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
-          const messageToSend = await messageFlowWithTemplate(
+          const messageToSend = await messageFlowWithLiveChat(
+            req,
             message,
             phoneNumber
           );
@@ -186,19 +199,6 @@ router.post("/webhook", async (req, res) => {
     } else if (reqBody.entry[0].changes[0].value.statuses[0]) {
       console.log("STATUS PATH FROM USER");
       console.log(reqBody.entry[0].changes[0].value.statuses[0]);
-      /*let messagesBody = reqBody.value.messages;
-      if (messagesBody) {
-        let phoneNumber = messagesBody[0].from;
-        if (phoneNumber.startsWith("549")) {
-          phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
-        }
-        let message = messagesBody[0].text.body;
-
-        const messageToSend = await messageFlowWithTemplate
-        (message, phoneNumber);
-        const response = await sendWhatsAppTemplate(messageToSend, phoneNumber);
-        console.log(response);
-      }*/
     }
     return res.status(200).send();
   } catch (error) {
@@ -281,7 +281,7 @@ const messageFlowWithTemplate = async (userMessage, userPhoneNumber) => {
   }
 };
 
-const messageFlowWithLiveChat = async (userMessage, userPhoneNumber) => {};
+const messageFlowWithLiveChat = async (req, userMessage, userPhoneNumber) => {};
 
 const createUserLiveChat = async (userPhoneNumber) => {
   const foundClaim = await Claim.findOne({
