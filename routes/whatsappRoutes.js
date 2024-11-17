@@ -6,6 +6,7 @@ import axios from "axios";
 import { Claim } from "../models/claimModel.js";
 import { Chat } from "../models/chatModel.js";
 import getTemplateByCode from "../utils/templateHandler.js";
+import { AssignPublicIp } from "@aws-sdk/client-eventbridge";
 
 const router = express.Router();
 
@@ -146,7 +147,10 @@ router.post("/webhook", async (req, res) => {
             }
             let message =
               req.body.entry[0].changes[0].value.messages[0].button.text;
-            const messageToSend = await messageFlow(message, phoneNumber);
+            const messageToSend = await messageFlowWithTemplate(
+              message,
+              phoneNumber
+            );
             if (messageToSend != null) {
               const response = await sendWhatsAppTemplate(
                 messageToSend,
@@ -167,7 +171,10 @@ router.post("/webhook", async (req, res) => {
           let message =
             req.body.entry[0].changes[0].value.messages[0].text.body;
           console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
-          const messageToSend = await messageFlow(message, phoneNumber);
+          const messageToSend = await messageFlowWithTemplate(
+            message,
+            phoneNumber
+          );
           if (messageToSend != null) {
             const response = await sendWhatsAppTemplate(
               messageToSend,
@@ -187,7 +194,8 @@ router.post("/webhook", async (req, res) => {
         }
         let message = messagesBody[0].text.body;
 
-        const messageToSend = await messageFlow(message, phoneNumber);
+        const messageToSend = await messageFlowWithTemplate
+        (message, phoneNumber);
         const response = await sendWhatsAppTemplate(messageToSend, phoneNumber);
         console.log(response);
       }*/
@@ -199,7 +207,7 @@ router.post("/webhook", async (req, res) => {
   }
 });
 
-const messageFlow = async (userMessage, userPhoneNumber) => {
+const messageFlowWithTemplate = async (userMessage, userPhoneNumber) => {
   try {
     const templateCode = await getTemplateByCode(userMessage);
     return templateCode;
@@ -271,6 +279,38 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
     console.log(error);
     return "Actualmente no podemos procesar tu mensaje, por favor intenta más tarde";
   }
+};
+
+const messageFlowWithLiveChat = async (userMessage, userPhoneNumber) => {};
+
+const createUserLiveChat = async (userPhoneNumber) => {
+  const foundClaim = await Claim.findOne({
+    "user.userPhoneNumber": userPhoneNumber,
+    status: { $ne: "Cerrado" },
+    category: "WhatsApp",
+  });
+  if (foundClaim) {
+    return;
+  }
+  //Crear un reclamo con un chat asociado
+  //El reclamo será de prioridad: "Consulta"
+  //El reclamo será de tipo: "Reclamo"
+  //Descripción: "Consulta realizada por WhatsApp"
+  //Assigned operator: admin
+
+  const createdChat = await Chat.create({});
+  const createdChatId = createdChat._id.toString();
+
+  const createdClaim = await Claim.create({
+    subject: "Consulta",
+    priority: "Consulta",
+    caseType: "Reclamo",
+    "user.userPhoneNumber": userPhoneNumber,
+    category: "WhatsApp",
+    relatedChat: createdChatId,
+    assignedOperator: "admin",
+  });
+  return createdClaim;
 };
 
 const findUserActiveClaim = async (userPhoneNumber) => {
