@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     match: [/.+\@.+\..+/, 'Please enter a valid e-mail address']
   },
   username: { type: String },
-  cuit: { type: String, unique: true, required: true },
+  cuit: { type: Number, unique: true, required: true },
   phone: { type: String },
   address: { type: String },
   location: { type: String },

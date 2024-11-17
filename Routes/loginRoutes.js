@@ -1,9 +1,9 @@
 import 'dotenv/config'
 import express from 'express'
-import { User } from '../Models/userModel.js'
+import { User } from '../models/userModel.js'
 import jsonwebtoken from 'jsonwebtoken'
 import { ACCESS_CONTROL } from '../utils/PERMISSIONS.js'
-import authenticateToken from '../Middlewares/jwtChecker.js'
+import authenticateToken from '../middlewares/jwtChecker.js'
 
 const router = express.Router()
 

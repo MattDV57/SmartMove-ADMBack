@@ -1,6 +1,6 @@
 // listeners.js
-import { Log } from '../Models/logModel.js';
-import { INPUT_EVENTS, MODULE_NAME_MAP } from './eventTypes.js';
+import { Log } from '../models/logModel.js';
+import { INPUT_EVENTS, MODULE_NAME_MAP } from './eventNames.js';
 
 
 export const processEvent = async (rawEvent) => {
@@ -9,6 +9,8 @@ export const processEvent = async (rawEvent) => {
   console.log("Proccesing event...")
 
   const event = { name: body['detail-type'], timestamp: body.time, data: body.detail };
+
+  console.log("\nEVENT NAME FROM SQS: ", event.name + "\n")
 
   const { module, eventType } = findModuleAndEventType(event.name);
 
@@ -19,9 +21,11 @@ export const processEvent = async (rawEvent) => {
 
   switch (event.name) {
     case `${INPUT_EVENTS.USER.CLAIM_CREATED}`:
+      //TODO
       await handleClaimCreated(event);
       break;
     case `${INPUT_EVENTS.LEGAL.REQUEST_CONTRACT_CANCELATION}`:
+      //TODO
       await handleRequestContractCancelation(event);
       break;
 

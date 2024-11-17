@@ -1,4 +1,4 @@
-import { Chat } from "../Models/chatModel.js";
+import { Chat } from "../models/chatModel.js";
 import { isValidObjectId } from "mongoose";
 
 const socketHandler = (io) => {

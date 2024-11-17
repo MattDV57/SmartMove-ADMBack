@@ -23,13 +23,11 @@ export const INPUT_EVENTS = {
 
 
 export const OUTPUT_EVENTS = {
-  ANALITYCS: {
-    ADMIN_CREATED: 'AdministradorCreado', // Analitica y Usuarios
-    ADMIN_UPDATED: 'AdministradorModificado', // Analitica y Usuarios
-    ADMIN_DELETED: 'AdministradorEliminado', // Analitica y Usuarios
-    CLAIM_UPDATED: 'ReclamoModificado',
-    CONFIRM_CONTRACT_CANCELATION: 'ConfirmarCancelacionContrato' // Legales
-  }
+  ADMIN_CREATED: 'AdministradorCreado', // Analitica y Usuarios
+  ADMIN_UPDATED: 'AdministradorModificado', // Analitica y Usuarios
+  ADMIN_DELETED: 'AdministradorEliminado', // Analitica y Usuarios
+  CLAIM_UPDATED: 'ReclamoModificado',
+  CONFIRM_CONTRACT_CANCELATION: 'ConfirmarCancelacionContrato' // Legales
 }
 
 
