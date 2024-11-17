@@ -1,8 +1,9 @@
 // listeners.js
 import { Claim } from '../../models/claimModel.js';
 import { ClaimCreateDTO } from './listenersDto.js';
-import { INPUT_EVENTS, MODULE_NAME_MAP } from '../eventNames.js';
+import { INPUT_EVENTS, MODULE_NAME_MAP, OUTPUT_EVENTS } from '../eventNames.js';
 import { Log } from '../../models/logModel.js';
+import { emitConfirmContractEvent } from '../bridge/emitters.js';
 
 
 export const processEvent = async (rawEvent) => {
@@ -67,6 +68,8 @@ const handleRequestContractCancelation = async (event) => {
   const hasOpenClaims = Claim.countDocuments([
     { $match: { ...Filter } }
   ]) === 0;
+
+  await emitConfirmContractEvent({contractId :event.data.contract_id, hasOpenClaims}, OUTPUT_EVENTS.CONFIRM_CONTRACT_CANCELATION);
 
 };
 
