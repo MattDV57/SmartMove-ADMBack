@@ -173,7 +173,7 @@ router.post("/webhook", async (req, res) => {
         }
       }
       //MESSAGE PATH
-      if (
+      else if (
         req.body.entry[0].changes[0].value.messages[0].from !=
         process.env.TEST_PHONE_NUMBER
       ) {
