@@ -9,7 +9,6 @@ const emitEvent = async ({ eventName, payload }) => {
   const params = {
     Entries: [
       {
-        Time: Date.now(),
         Source: 'SmartMove', 
         DetailType: eventName, 
         Detail: JSON.stringify(payload), 
