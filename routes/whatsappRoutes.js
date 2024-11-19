@@ -32,7 +32,7 @@ messaging_product: "whatsapp",
 const sendWhatsAppMessage = async (message, phone) => {
   try {
     const response = await axios({
-      url: `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
+      url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
       method: "post",
       headers: {
         Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -58,7 +58,7 @@ const sendWhatsAppMessage = async (message, phone) => {
 
 const sendWhatsAppTemplate = async (templateCode, phone) => {
   const response = await axios({
-    url: `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
+    url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
     method: "post",
     headers: {
       Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
