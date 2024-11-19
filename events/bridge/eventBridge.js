@@ -9,6 +9,7 @@ const emitEvent = async ({ eventName, payload }) => {
   const params = {
     Entries: [
       {
+        Time: Date.now(),
         Source: 'SmartMove', 
         DetailType: eventName, 
         Detail: JSON.stringify(payload), 
@@ -18,7 +19,9 @@ const emitEvent = async ({ eventName, payload }) => {
   };
 
   try {
-    await eventBridgeClient.send(new PutEventsCommand(params));
+
+    const command = new PutEventsCommand(params);
+    await eventBridgeClient.send(command);
     console.log(`Evento ${eventName} enviado a EventBridge con éxito.`);
 
   } catch (error) {

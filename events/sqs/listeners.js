@@ -14,14 +14,14 @@ export const processEvent = async (rawEvent) => {
   const event = { name: body['detail-type'], timestamp: body.time, data: body.detail };
 
   console.log("\nEVENT NAME FROM SQS: ", event.name + "\n")
-
+ 
   const { module, eventType } = findModuleAndEventType(event.name);
 
   if (eventType === 'LOGS') {
     await handleCreateLog(event, module);
     return;
   }
-
+  //TODO: Faltan implemenar algunos eventos que estan en el excel.
   switch (event.name) {
     case `${INPUT_EVENTS.USER.CLAIM_CREATED}`:
       await handleClaimCreated(event);

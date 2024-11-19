@@ -17,8 +17,6 @@ export const pollQueue = async () => {
       const command = new ReceiveMessageCommand(params);
       const response = await sqsClient.send(command); 
 
-      console.log("RESPONSE", response)
-
       console.log("IS QUEUE EMPTY?", response.Messages === undefined)
     
       if (!response) return
@@ -28,12 +26,12 @@ export const pollQueue = async () => {
         for (const message of response.Messages) {
           await processEvent(message); 
 
-          // const deleteParams = {
-          //   QueueUrl: process.env.SQS_URL,
-          //   ReceiptHandle: message.ReceiptHandle,
-          // };
-          // const deleteCommand = new DeleteMessageCommand(deleteParams);
-          // await sqsClient.send(deleteCommand);
+          const deleteParams = {
+            QueueUrl: process.env.SQS_URL,
+            ReceiptHandle: message.ReceiptHandle,
+          };
+          const deleteCommand = new DeleteMessageCommand(deleteParams);
+          await sqsClient.send(deleteCommand);
         }
       }
     } catch (error) {
