@@ -132,9 +132,12 @@ router.post("/webhook", async (req, res) => {
       hasStatuses = true;
     }
     if (reqBody.object && !hasStatuses) {
+      console.log("First check");
       if (reqBody.entry[0].changes[0].value) {
         //TEMPLATE PATH
+        console.log("Second Check");
         if (reqBody.entry[0].changes[0].value.messages[0].button != undefined) {
+          console.log("Third Check");
           if (
             req.body.entry[0].changes[0].value.messages[0].from !=
             process.env.TEST_PHONE_NUMBER
@@ -155,9 +158,8 @@ router.post("/webhook", async (req, res) => {
               messageToSend,
               phoneNumber
             );
-            if (response) {
-              console.log("A TEMPLATE HAS BEEN SENT");
-            }
+
+            console.log("A TEMPLATE HAS BEEN SENT");
             /*if (messageToSend != null && messageToSend == "chat_en_vivo") {
               console.log("USING IO");
               const io = req.app.get("socketio");
@@ -170,31 +172,32 @@ router.post("/webhook", async (req, res) => {
               io.to("672e959b3ff1daf56af0e561").emit("message", testMessage);*/
             //672e959b3ff1daf56af0e561
           }
+        } else if (
+          req.body.entry[0].changes[0].value.messages[0].from !=
+          process.env.TEST_PHONE_NUMBER
+        ) {
+          console.log("Fourth Check");
+          let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
+          if (phoneNumber.startsWith("549")) {
+            phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
+          }
+          let message =
+            req.body.entry[0].changes[0].value.messages[0].text.body;
+          console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
+          const messageToSend = await messageFlowWithLiveChat(
+            req,
+            message,
+            phoneNumber
+          );
+          if (messageToSend != null) {
+            const response = await sendWhatsAppTemplate(
+              messageToSend,
+              phoneNumber
+            );
+          }
         }
       }
       //MESSAGE PATH
-      else if (
-        req.body.entry[0].changes[0].value.messages[0].from !=
-        process.env.TEST_PHONE_NUMBER
-      ) {
-        let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
-        if (phoneNumber.startsWith("549")) {
-          phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
-        }
-        let message = req.body.entry[0].changes[0].value.messages[0].text.body;
-        console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
-        const messageToSend = await messageFlowWithLiveChat(
-          req,
-          message,
-          phoneNumber
-        );
-        if (messageToSend != null) {
-          const response = await sendWhatsAppTemplate(
-            messageToSend,
-            phoneNumber
-          );
-        }
-      }
     }
     return res.status(200).send();
   } catch (error) {
