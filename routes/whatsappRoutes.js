@@ -151,13 +151,14 @@ router.post("/webhook", async (req, res) => {
               message,
               phoneNumber
             );
-            if (messageToSend != null && messageToSend != "chat_en_vivo") {
-              const response = await sendWhatsAppTemplate(
-                messageToSend,
-                phoneNumber
-              );
+            const response = await sendWhatsAppTemplate(
+              messageToSend,
+              phoneNumber
+            );
+            if (response) {
+              console.log("A TEMPLATE HAS BEEN SENT");
             }
-            if (messageToSend != null && messageToSend == "chat_en_vivo") {
+            /*if (messageToSend != null && messageToSend == "chat_en_vivo") {
               console.log("USING IO");
               const io = req.app.get("socketio");
 
@@ -166,39 +167,34 @@ router.post("/webhook", async (req, res) => {
                 body: "Un usuario quizo entrar al liveChat",
                 sender: "user",
               };
-              io.to("672e959b3ff1daf56af0e561").emit("message", testMessage);
-              //672e959b3ff1daf56af0e561
-            }
-          }
-        }
-        //MESSAGE PATH
-        if (
-          req.body.entry[0].changes[0].value.messages[0].from !=
-          process.env.TEST_PHONE_NUMBER
-        ) {
-          let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
-          if (phoneNumber.startsWith("549")) {
-            phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
-          }
-          let message =
-            req.body.entry[0].changes[0].value.messages[0].text.body;
-          console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
-          const messageToSend = await messageFlowWithLiveChat(
-            req,
-            message,
-            phoneNumber
-          );
-          if (messageToSend != null) {
-            const response = await sendWhatsAppTemplate(
-              messageToSend,
-              phoneNumber
-            );
+              io.to("672e959b3ff1daf56af0e561").emit("message", testMessage);*/
+            //672e959b3ff1daf56af0e561
           }
         }
       }
-    } else if (reqBody.entry[0].changes[0].value.statuses[0]) {
-      console.log("STATUS PATH FROM USER");
-      console.log(reqBody.entry[0].changes[0].value.statuses[0]);
+      //MESSAGE PATH
+      if (
+        req.body.entry[0].changes[0].value.messages[0].from !=
+        process.env.TEST_PHONE_NUMBER
+      ) {
+        let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
+        if (phoneNumber.startsWith("549")) {
+          phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
+        }
+        let message = req.body.entry[0].changes[0].value.messages[0].text.body;
+        console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
+        const messageToSend = await messageFlowWithLiveChat(
+          req,
+          message,
+          phoneNumber
+        );
+        if (messageToSend != null) {
+          const response = await sendWhatsAppTemplate(
+            messageToSend,
+            phoneNumber
+          );
+        }
+      }
     }
     return res.status(200).send();
   } catch (error) {
@@ -210,6 +206,7 @@ router.post("/webhook", async (req, res) => {
 const messageFlowWithTemplate = async (userMessage, userPhoneNumber) => {
   try {
     const templateCode = await getTemplateByCode(userMessage);
+    console.log("TEMPLATE CODE: ", templateCode);
     return templateCode;
 
     const foundClaim = await findUserActiveClaim(userPhoneNumber);
