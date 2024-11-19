@@ -4,7 +4,7 @@ import { Chat } from '../models/chatModel.js'
 import authenticateToken from '../middlewares/jwtChecker.js'
 import { authorizeRole } from '../middlewares/authorizeRole.js'
 import { ACCESS_CONTROL, INTERNAL_ROLES } from '../utils/PERMISSIONS.js'
-import { emitClaimEvent } from '../events/emitters.js'
+import { emitClaimEvent } from '../events/bridge/emitters.js'
 import { OUTPUT_EVENTS } from '../events/eventNames.js'
 
 const router = express.Router()
@@ -127,13 +127,8 @@ router.get('/dashboard', authenticateToken, authorizeRole(ACCESS_CONTROL.GET_DAS
 
 router.post('/', authenticateToken, authorizeRole(ACCESS_CONTROL.POST_CLAIM), async (req, res) => {
   try {
-    const createdChat = await Chat.create({})
-    const createdChatId = createdChat._id.toString()
 
-    const requestBody = req.body
-    requestBody.relatedChat = createdChatId
-
-    const createdClaim = await Claim.create(requestBody)
+    const createdClaim = await Claim.create(req.body);
 
     return res.status(200).send(createdClaim)
   } catch (error) {

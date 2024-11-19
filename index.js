@@ -6,7 +6,7 @@ import { Server } from 'socket.io'
 import { createServer } from 'http'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
-import { pollQueue } from './events/sqsConsumer.js'
+import { pollQueue } from './events/sqs/sqsConsumer.js'
 
 import cookieParser from "cookie-parser";
 // import chatRoutes from "./Routes/chatRoutes.js";

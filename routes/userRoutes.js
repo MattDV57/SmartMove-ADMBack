@@ -4,7 +4,7 @@ import { User } from '../models/userModel.js'
 import authenticateToken from '../middlewares/jwtChecker.js'
 import { authorizeRole } from '../middlewares/authorizeRole.js'
 import { ACCESS_CONTROL } from '../utils/PERMISSIONS.js'
-import { emitAdminEvent } from '../events/emitters.js'
+import { emitAdminEvent } from '../events/bridge/emitters.js'
 import { OUTPUT_EVENTS } from '../events/eventNames.js'
 import { Log } from '../models/logModel.js'
 const router = express.Router()
