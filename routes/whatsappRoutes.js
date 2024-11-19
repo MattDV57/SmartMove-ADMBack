@@ -144,7 +144,9 @@ router.post("/webhook", async (req, res) => {
         console.log("CHANGE 0 BODY CHCK: ", reqBody.entry[0].changes[0]);
         console.log("ALL CHANGES BODY CHCK: ", reqBody.entry[0].changes);
         console.log("ENTIRE DATA: ", JSON.stringify(req.body));
-        if ((reqBody.entry[0].changes[0].value.messages[0].type = "button")) {
+        if (
+          reqBody.entry[0].changes[0].value.messages[0].type.button != undefined
+        ) {
           console.log("Third Check");
           if (
             req.body.entry[0].changes[0].value.messages[0].from !=
