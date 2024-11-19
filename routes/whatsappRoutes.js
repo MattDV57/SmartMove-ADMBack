@@ -136,7 +136,11 @@ router.post("/webhook", async (req, res) => {
       if (reqBody.entry[0].changes[0].value) {
         //TEMPLATE PATH
         console.log("Second Check");
-        if (reqBody.entry[0].changes[0].value.messages[0].button != undefined) {
+        console.log(
+          "REQ BODY CHCK: ",
+          reqBody.entry[0].changes[0].value.messages[0]
+        );
+        if (reqBody.entry[0].changes[0].value.messages[0].button) {
           console.log("Third Check");
           if (
             req.body.entry[0].changes[0].value.messages[0].from !=
