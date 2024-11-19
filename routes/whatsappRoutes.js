@@ -192,8 +192,7 @@ router.post("/webhook", async (req, res) => {
           let message =
             req.body.entry[0].changes[0].value.messages[0].text.body;
           console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
-          const messageToSend = await messageFlowWithLiveChat(
-            req,
+          const messageToSend = await messageFlowWithTemplate(
             message,
             phoneNumber
           );
