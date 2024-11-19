@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
       httpOnly: true,
       secure: false,
       maxAge: 24 * 60 * 60 * 1000, // Expira en 24 horas
-      sameSite: 'Lax'
+      sameSite: 'none'
     })
 
     res.status(200).send({ ...user._doc, USER_PERMISSIONS })
@@ -68,7 +68,7 @@ router.post('/logout', (req, res) => {
   res.clearCookie('accessToken', {
     httpOnly: true,
     secure: false,
-    sameSite: 'Lax'
+    sameSite: 'none'
   })
 
   res.status(200).send({ message: 'Succesful logout' })
