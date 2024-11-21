@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
-import { checkApiKey } from '../middlewares/checkApiKey.js';
+import { checkApiKey } from '../middlewares/authz.middleware.js';
 import { processEvent } from './sqs/listeners.js';
 
 

@@ -1,14 +1,13 @@
 import "dotenv/config";
 import express from "express";
 import { Log } from "../models/logModel.js";
-import authenticateToken from "../middlewares/jwtChecker.js";
-import { authorizeRole } from "../middlewares/authorizeRole.js";
+import { checkPermissions } from "../middlewares/authz.middleware.js";
 import { ACCESS_CONTROL } from "../utils/PERMISSIONS.js";
 
 const router = express.Router();
 
 // Query params: search, page, limit
-router.get("/", authenticateToken, authorizeRole(ACCESS_CONTROL.GET_LOGS), async (req, res) => {
+router.get("/",  checkPermissions(ACCESS_CONTROL.GET_LOGS), async (req, res) => {
   try {
 
     const { search= "", page = 1, limit = 10 } = req.query;

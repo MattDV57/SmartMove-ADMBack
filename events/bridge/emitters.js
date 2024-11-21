@@ -1,6 +1,6 @@
 // emitters.js
 import { AdminEventDTO, ClaimEventDTO, ContractCancelEventDTO } from './emittersDto.js';
-import emitEvent from './eventBridge.js';
+import { emitEvent } from './eventBridge.js';
 
 
 export const emitAdminEvent = async (userData, eventName) => {

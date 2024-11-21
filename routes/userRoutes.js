@@ -1,8 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import { User } from '../models/userModel.js'
-import authenticateToken from '../middlewares/jwtChecker.js'
-import { authorizeRole } from '../middlewares/authorizeRole.js'
+import { checkPermissions } from '../middlewares/authz.middleware.js'
 import { ACCESS_CONTROL } from '../utils/PERMISSIONS.js'
 import { emitAdminEvent } from '../events/bridge/emitters.js'
 import { OUTPUT_EVENTS } from '../events/eventNames.js'
@@ -16,7 +15,7 @@ const MODULE_EMITTER = 'Admin. Interna'
 /**
 Get all users: /users?page=1&limit=10
 */
-router.get('/', authenticateToken, authorizeRole(ACCESS_CONTROL.GET_ALL_USERS), async (req, res) => {
+router.get('/', checkPermissions(ACCESS_CONTROL.GET_ALL_USERS), async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1
     const limitPerPage = parseInt(req.query.limit) || 10
@@ -43,7 +42,7 @@ router.get('/', authenticateToken, authorizeRole(ACCESS_CONTROL.GET_ALL_USERS), 
 Get user by id: /users/:userId
  */
 
-router.get('/:userId/profile', authenticateToken, authorizeRole(ACCESS_CONTROL.GET_USER_PROFILE), async (req, res) => {
+router.get('/:userId/profile', checkPermissions(ACCESS_CONTROL.GET_USER_PROFILE), async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.params.userId })
     if (!user) {
@@ -61,7 +60,7 @@ router.get('/:userId/profile', authenticateToken, authorizeRole(ACCESS_CONTROL.G
 Put user: /users/:userId
 */
 
-router.put('/:userId', authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_USER), async (req, res) => {
+router.put('/:userId', checkPermissions(ACCESS_CONTROL.PUT_USER), async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
 
@@ -90,7 +89,7 @@ router.put('/:userId', authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_USER)
 Post user: /users
 */
 
-router.post('/', authenticateToken, authorizeRole(ACCESS_CONTROL.POST_USER), async (req, res) => {
+router.post('/', checkPermissions(ACCESS_CONTROL.POST_USER), async (req, res) => {
   try {
     const newUser = new User(req.body)
 
@@ -111,7 +110,7 @@ router.post('/', authenticateToken, authorizeRole(ACCESS_CONTROL.POST_USER), asy
 Delete user: /users/:userId
  */
 
-router.delete('/:userId', authenticateToken, authorizeRole(ACCESS_CONTROL.DELETE_USER), async (req, res) => {
+router.delete('/:userId', checkPermissions(ACCESS_CONTROL.DELETE_USER), async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
 

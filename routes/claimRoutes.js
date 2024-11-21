@@ -1,8 +1,7 @@
 import express from 'express'
 import { Claim } from '../models/claimModel.js'
 import { Chat } from '../models/chatModel.js'
-import authenticateToken from '../middlewares/jwtChecker.js'
-import { authorizeRole } from '../middlewares/authorizeRole.js'
+import { checkPermissions } from '../middlewares/authz.middleware.js'
 import { ACCESS_CONTROL, INTERNAL_ROLES } from '../utils/PERMISSIONS.js'
 import { emitClaimEvent } from '../events/bridge/emitters.js'
 import { OUTPUT_EVENTS } from '../events/eventNames.js'
@@ -10,7 +9,7 @@ import { OUTPUT_EVENTS } from '../events/eventNames.js'
 const router = express.Router()
 
 // Get all claims
-router.get('/', authenticateToken, authorizeRole(ACCESS_CONTROL.GET_ALL_CLAIMS), async (req, res) => {
+router.get('/', checkPermissions(ACCESS_CONTROL.GET_ALL_CLAIMS), async (req, res) => {
   try {
     const { foundClaimsPaginated, totalClaims } = await getPaginatedClaims(req)
 
@@ -22,7 +21,7 @@ router.get('/', authenticateToken, authorizeRole(ACCESS_CONTROL.GET_ALL_CLAIMS),
 })
 
 // Get my claims
-router.get('/involved/:username', authenticateToken, authorizeRole(ACCESS_CONTROL.GET_MY_CLAIMS), async (req, res) => {
+router.get('/involved/:username', checkPermissions(ACCESS_CONTROL.GET_MY_CLAIMS), async (req, res) => {
   try {
     const filter = Object.values(INTERNAL_ROLES).includes(req.user.accessRole)
       ? { assignedOperator: req.params.username }
@@ -61,7 +60,7 @@ const getPaginatedClaims = async (req, filter = {}) => {
 }
 
 // Get dashboard data
-router.get('/dashboard', authenticateToken, authorizeRole(ACCESS_CONTROL.GET_DASHBOARD), async (req, res) => {
+router.get('/dashboard', checkPermissions(ACCESS_CONTROL.GET_DASHBOARD), async (req, res) => {
   try {
     const today = new Date()
     const startOfWeek = new Date(
@@ -125,7 +124,7 @@ router.get('/dashboard', authenticateToken, authorizeRole(ACCESS_CONTROL.GET_DAS
   }
 })
 
-router.post('/', authenticateToken, authorizeRole(ACCESS_CONTROL.POST_CLAIM), async (req, res) => {
+router.post('/', checkPermissions(ACCESS_CONTROL.POST_CLAIM), async (req, res) => {
   try {
 
     const createdClaim = await Claim.create(req.body);
@@ -137,7 +136,7 @@ router.post('/', authenticateToken, authorizeRole(ACCESS_CONTROL.POST_CLAIM), as
   }
 })
 
-router.put('/:claimId', authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_CLAIM), async (req, res) => {
+router.put('/:claimId', checkPermissions(ACCESS_CONTROL.PUT_CLAIM), async (req, res) => {
   try {
     const updatedClaim = await Claim.findOneAndUpdate(
       {
@@ -156,7 +155,7 @@ router.put('/:claimId', authenticateToken, authorizeRole(ACCESS_CONTROL.PUT_CLAI
   }
 })
 
-router.put('/:claimId/assign-chat', authenticateToken, async (req, res) => {
+router.put('/:claimId/assign-chat',  async (req, res) => {
   try {
     const chatID = req.body.chatID
     const updatedClaim = await Claim.findOneAndUpdate(
@@ -176,7 +175,7 @@ router.put('/:claimId/assign-chat', authenticateToken, async (req, res) => {
   }
 })
 
-router.get('/:claimId/chat', authenticateToken, authorizeRole(ACCESS_CONTROL.GET_CHAT_HISTORY), async (req, res) => {
+router.get('/:claimId/chat', checkPermissions(ACCESS_CONTROL.GET_CHAT_HISTORY), async (req, res) => {
   try {
     const foundClaim = await Claim.findById(req.params.claimId)
     if (!foundClaim) {

@@ -7,9 +7,8 @@ import { createServer } from 'http'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { pollQueue } from './events/sqs/sqsConsumer.js'
-
 import cookieParser from "cookie-parser";
-// import chatRoutes from "./Routes/chatRoutes.js";
+
 import claimRoutes from './routes/claimRoutes.js'
 import loginRoutes from './routes/loginRoutes.js'
 import whatsAppRoutes from './routes/whatsappRoutes.js'
@@ -18,6 +17,7 @@ import logRoutes from './routes/logRoutes.js'
 import userRoutes from './routes/userRoutes.js'
 import socketHandler from './sockets/socketHandler.js'
 import eventsRoutes from './events/eventsRoutes.js';
+import { authenticateToken } from './middlewares/authn.middleware.js'
 
 const app = express();
 app.use(express.json());
@@ -44,7 +44,25 @@ const io = new Server(server, {
   },
 });
 
-// app.use("/chat", chatRoutes);
+const publicRoutes = [
+  { url: '/login', methods: ['POST'] }, 
+  { url: '/auth', methods: ['POST'] },
+  { url: '/whatsapp', methods: ['GET', 'POST'] }
+];
+
+
+app.use((req, res, next) => {
+  const isPublicRoute = publicRoutes.some(
+    route => route.url === req.path && route.methods.includes(req.method)
+  );
+
+  if (isPublicRoute) {
+    return next()
+  }
+
+  authenticateToken(req, res, next);
+});
+
 app.use("/claim", claimRoutes);
 app.use("/login", loginRoutes);
 app.use("/whatsapp", whatsAppRoutes);
