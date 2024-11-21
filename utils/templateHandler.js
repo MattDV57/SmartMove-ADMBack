@@ -1,9 +1,11 @@
 const messageTemplateCodeWords = {
   //Funcionalidad
-  "Volver a menú": "primer_mensaje_bienvenida",
+  //"Volver a menú": "primer_mensaje_bienvenida",
+  "Volver a menú": "menu_original_with_live_chat",
   "Terminar el chat": "servidores_estado_caido",
 
   //Botones de reclamo
+  "Chat en Vivo": "chat_en_vivo",
   "Generar un reclamo": "generar_reclamo_menu",
   "Problema de alquiler": "reclamo_alquiler",
   "Muebles dañados": "reclamo_registrado",

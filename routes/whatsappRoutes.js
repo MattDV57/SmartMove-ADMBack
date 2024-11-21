@@ -6,6 +6,7 @@ import axios from "axios";
 import { Claim } from "../models/claimModel.js";
 import { Chat } from "../models/chatModel.js";
 import getTemplateByCode from "../utils/templateHandler.js";
+import { AssignPublicIp } from "@aws-sdk/client-eventbridge";
 
 const router = express.Router();
 
@@ -31,7 +32,7 @@ messaging_product: "whatsapp",
 const sendWhatsAppMessage = async (message, phone) => {
   try {
     const response = await axios({
-      url: `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
+      url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
       method: "post",
       headers: {
         Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -57,7 +58,7 @@ const sendWhatsAppMessage = async (message, phone) => {
 
 const sendWhatsAppTemplate = async (templateCode, phone) => {
   const response = await axios({
-    url: `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
+    url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
     method: "post",
     headers: {
       Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -131,12 +132,27 @@ router.post("/webhook", async (req, res) => {
       hasStatuses = true;
     }
     if (reqBody.object && !hasStatuses) {
+      console.log("First check");
       if (reqBody.entry[0].changes[0].value) {
-        if (reqBody.entry[0].changes[0].value.messages[0].button != undefined) {
+        //TEMPLATE PATH
+        console.log("Second Check");
+        console.log(
+          "REQ BODY CHCK: ",
+          reqBody.entry[0].changes[0].value.messages[0]
+        );
+        console.log("Button BODY CHCK: ", reqBody.entry[0].changes[0].value);
+        console.log("CHANGE 0 BODY CHCK: ", reqBody.entry[0].changes[0]);
+        console.log("ALL CHANGES BODY CHCK: ", reqBody.entry[0].changes);
+        console.log("ENTIRE DATA: ", JSON.stringify(req.body));
+        if (
+          reqBody.entry[0].changes[0].value.messages[0].type.button != undefined
+        ) {
+          console.log("Third Check");
           if (
             req.body.entry[0].changes[0].value.messages[0].from !=
             process.env.TEST_PHONE_NUMBER
           ) {
+            console.log("TEMPLATE PATH FROM USER");
             let phoneNumber =
               req.body.entry[0].changes[0].value.messages[0].from;
             if (phoneNumber.startsWith("549")) {
@@ -144,52 +160,53 @@ router.post("/webhook", async (req, res) => {
             }
             let message =
               req.body.entry[0].changes[0].value.messages[0].button.text;
-            const messageToSend = await messageFlow(message, phoneNumber);
-            if (messageToSend != null) {
-              const response = await sendWhatsAppTemplate(
-                messageToSend,
-                phoneNumber
-              );
-            }
+            const messageToSend = await messageFlowWithTemplate(
+              message,
+              phoneNumber
+            );
+            const response = await sendWhatsAppTemplate(
+              messageToSend,
+              phoneNumber
+            );
+
+            console.log("A TEMPLATE HAS BEEN SENT");
+            /*if (messageToSend != null && messageToSend == "chat_en_vivo") {
+              console.log("USING IO");
+              const io = req.app.get("socketio");
+
+              testMessage = {
+                from: "user",
+                body: "Un usuario quizo entrar al liveChat",
+                sender: "user",
+              };
+              io.to("672e959b3ff1daf56af0e561").emit("message", testMessage);*/
+            //672e959b3ff1daf56af0e561
           }
-        }
-        if (
+        } else if (
           req.body.entry[0].changes[0].value.messages[0].from !=
           process.env.TEST_PHONE_NUMBER
         ) {
+          console.log("Fourth Check");
           let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
           if (phoneNumber.startsWith("549")) {
             phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
           }
           let message =
             req.body.entry[0].changes[0].value.messages[0].text.body;
-          const messageToSend = await messageFlow(message, phoneNumber);
+          console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
+          const messageToSend = await messageFlowWithTemplate(
+            message,
+            phoneNumber
+          );
           if (messageToSend != null) {
             const response = await sendWhatsAppTemplate(
               messageToSend,
               phoneNumber
             );
           }
-          console.log("IS MESSAGE NULL: " + messageToSend == null);
-          console.log(response);
-          console.log(response.data);
         }
       }
-    } else if (reqBody.entry[0].changes[0].value.statuses[0]) {
-      console.log("STATUSES");
-      console.log(reqBody.entry[0].changes[0].value.statuses[0]);
-      /*let messagesBody = reqBody.value.messages;
-      if (messagesBody) {
-        let phoneNumber = messagesBody[0].from;
-        if (phoneNumber.startsWith("549")) {
-          phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
-        }
-        let message = messagesBody[0].text.body;
-
-        const messageToSend = await messageFlow(message, phoneNumber);
-        const response = await sendWhatsAppTemplate(messageToSend, phoneNumber);
-        console.log(response);
-      }*/
+      //MESSAGE PATH
     }
     return res.status(200).send();
   } catch (error) {
@@ -198,11 +215,10 @@ router.post("/webhook", async (req, res) => {
   }
 });
 
-const messageFlow = async (userMessage, userPhoneNumber) => {
+const messageFlowWithTemplate = async (userMessage, userPhoneNumber) => {
   try {
     const templateCode = await getTemplateByCode(userMessage);
-    console.log(templateCode);
-    console.log(typeof templateCode);
+    console.log("TEMPLATE CODE: ", templateCode);
     return templateCode;
 
     const foundClaim = await findUserActiveClaim(userPhoneNumber);
@@ -272,6 +288,38 @@ const messageFlow = async (userMessage, userPhoneNumber) => {
     console.log(error);
     return "Actualmente no podemos procesar tu mensaje, por favor intenta más tarde";
   }
+};
+
+const messageFlowWithLiveChat = async (req, userMessage, userPhoneNumber) => {};
+
+const createUserLiveChat = async (userPhoneNumber) => {
+  const foundClaim = await Claim.findOne({
+    "user.userPhoneNumber": userPhoneNumber,
+    status: { $ne: "Cerrado" },
+    category: "WhatsApp",
+  });
+  if (foundClaim) {
+    return;
+  }
+  //Crear un reclamo con un chat asociado
+  //El reclamo será de prioridad: "Consulta"
+  //El reclamo será de tipo: "Reclamo"
+  //Descripción: "Consulta realizada por WhatsApp"
+  //Assigned operator: admin
+
+  const createdChat = await Chat.create({});
+  const createdChatId = createdChat._id.toString();
+
+  const createdClaim = await Claim.create({
+    subject: "Consulta",
+    priority: "Consulta",
+    caseType: "Reclamo",
+    "user.userPhoneNumber": userPhoneNumber,
+    category: "WhatsApp",
+    relatedChat: createdChatId,
+    assignedOperator: "admin",
+  });
+  return createdClaim;
 };
 
 const findUserActiveClaim = async (userPhoneNumber) => {
