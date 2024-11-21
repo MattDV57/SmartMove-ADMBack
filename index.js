@@ -17,6 +17,7 @@ import authRoutes from './routes/authRoutes.js'
 import logRoutes from './routes/logRoutes.js'
 import userRoutes from './routes/userRoutes.js'
 import socketHandler from './sockets/socketHandler.js'
+import eventsRoutes from './events/eventsRoutes.js';
 
 const app = express();
 app.use(express.json());
@@ -50,10 +51,11 @@ app.use("/whatsapp", whatsAppRoutes);
 app.use("/auth", authRoutes);
 app.use("/log", logRoutes);
 app.use("/users", userRoutes);
+app.use("/events", eventsRoutes);
 
 socketHandler(io)
 
-// pollQueue();
+// pollQueue(); // A eliminar cuando haya lambda
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING)

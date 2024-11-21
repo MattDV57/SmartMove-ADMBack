@@ -6,7 +6,12 @@ export class ClaimCreateDTO {
         this.category = claimData.categoria;
         this.subject = claimData.asunto;
         this.user = {
-            username: claimData.username
+            username: claimData.usernameReclamante,
+            fullName: claimData.nombreReclamante + " " + claimData.apellidoReclamante
+        };
+        this.infractor = {
+          username: claimData.usernameInfractor,
+          fullName: claimData.nombreInfractor + " " +  claimData.apellidoInfractor
         };
         this.priority = this.calculatePriority();
     }

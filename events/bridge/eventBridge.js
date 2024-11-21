@@ -4,12 +4,11 @@ import { configClient } from '../configClient.js';
 
 const eventBridgeClient = new EventBridgeClient(configClient);
 
-const emitEvent = async ({ eventName, payload }) => {
+export const emitEvent = async ({ eventName, payload }) => {
 
   const params = {
     Entries: [
       {
-        Time: Date.now(),
         Source: 'SmartMove', 
         DetailType: eventName, 
         Detail: JSON.stringify(payload), 
@@ -29,4 +28,4 @@ const emitEvent = async ({ eventName, payload }) => {
   }
 };
 
-export default emitEvent;
+

@@ -4,6 +4,8 @@ import { configClient } from '../configClient.js';
 
 const sqsClient = new SQSClient(configClient);
 
+
+//TODO: A ELIMINAR ESTO... cuando se implement la lambda
 export const pollQueue = async () => {
   const params = {
     QueueUrl: process.env.SQS_URL,

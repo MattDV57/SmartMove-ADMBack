@@ -17,11 +17,13 @@ const claimSchema = new mongoose.Schema({
   user: {
     username: { type: String },
     userId: { type: Number },
-    userPhoneNumber: { type: Number }
+    userPhoneNumber: { type: Number },
+    fullName: { type: String }
   },
-  counterParty: {
+  infractor: {
     username: { type: String },
-    userId: { type: Number }
+    userId: { type: Number },
+    fullName: { type: String }
   },
   caseType: {
     type: String,

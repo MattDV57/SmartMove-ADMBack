@@ -9,11 +9,9 @@ import { emitConfirmContractEvent } from '../bridge/emitters.js';
 export const processEvent = async (rawEvent) => {
   const body = JSON.parse(rawEvent.Body);
 
-  console.log("Proccesing event...")
-
   const event = { name: body['detail-type'], timestamp: body.time, data: body.detail };
 
-  console.log("\nEVENT NAME FROM SQS: ", event.name + "\n")
+  console.log("Proccesing event...", event.name);
  
   const { module, eventType } = findModuleAndEventType(event.name);
 
@@ -66,7 +64,7 @@ const handleRequestContractCancelation = async (event) => {
   //TODO contract_id ? Para que? Quieren que les respondamos de forma inmediata? Que generemos una noti?
   const filter = {'user.username': event.data.username, status: "Abierto" };
   const hasOpenClaims = Claim.countDocuments([
-    { $match: { ...Filter } }
+    { $match: { ...filter } }
   ]) === 0;
 
   await emitConfirmContractEvent({contractId :event.data.contract_id, hasOpenClaims}, OUTPUT_EVENTS.CONFIRM_CONTRACT_CANCELATION);
