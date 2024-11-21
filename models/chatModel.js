@@ -5,9 +5,9 @@ const chatSchema = new mongoose.Schema(
     timestamp: { type: Date, default: Date.now },
     messages: [
       {
-        from: { type: String, required: true },
-        body: { type: String, required: true },
-        sender: { type: String, required: true },
+        from: { type: String },
+        body: { type: String },
+        sender: { type: String },
         timestamp: { type: Date, default: Date.now },
       },
     ],

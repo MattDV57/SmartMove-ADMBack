@@ -24,3 +24,10 @@ export class ClaimEventDTO {
     this.resolution = claimData.resolution;
   }
 }
+
+export class ContractCancelEventDTO {
+  constructor(contractData) {
+    this.contractId = contractData.contractId;
+    this.hasOpenClaims = contractData.hasOpenClaims;
+  } 
+}

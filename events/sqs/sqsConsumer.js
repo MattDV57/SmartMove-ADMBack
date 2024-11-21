@@ -1,6 +1,6 @@
 import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand } from '@aws-sdk/client-sqs';
-import { processEvent } from './listeners.js';
-import { configClient } from './configClient.js';
+import { handleClaimCreated, processEvent } from './listeners.js';
+import { configClient } from '../configClient.js';
 
 const sqsClient = new SQSClient(configClient);
 
@@ -17,11 +17,10 @@ export const pollQueue = async () => {
       const command = new ReceiveMessageCommand(params);
       const response = await sqsClient.send(command); 
 
-      console.log("RESPONSE", response)
-
       console.log("IS QUEUE EMPTY?", response.Messages === undefined)
     
       if (!response) return
+    
 
       if (response.Messages) {
         for (const message of response.Messages) {
@@ -43,3 +42,4 @@ export const pollQueue = async () => {
   
   setInterval(pollMessages, 10000)
 };
+
