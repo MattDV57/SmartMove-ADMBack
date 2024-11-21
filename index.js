@@ -1,4 +1,3 @@
-
 import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
@@ -7,11 +6,10 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { pollQueue } from "./events/sqsConsumer.js";
+import { pollQueue } from "./events/sqs/sqsConsumer.js";
 
 import { Chat } from "./models/chatModel.js";
 import { isValidObjectId } from "mongoose";
-
 
 import cookieParser from "cookie-parser";
 // import chatRoutes from "./Routes/chatRoutes.js";
