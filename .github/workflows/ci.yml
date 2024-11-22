@@ -33,6 +33,7 @@ jobs:
             -t mattdv57/smartmoveback \
             --build-arg ACCESS_TOKEN_SECRET='${{ secrets.ACCESS_TOKEN_SECRET }}' \
             --build-arg DOCKER_PASSWORD='${{ secrets.DOCKER_PASSWORD }}' \
+            --build-arg API_KEY='${{ secrets.API_KEY }}' \
             --build-arg DOCKER_USER='${{ secrets.DOCKER_USER }}' \
             --build-arg LDAP_ADMIN_DN='${{ secrets.LDAP_ADMIN_DN }}' \
             --build-arg LDAP_ADMIN_PASSWORD='${{ secrets.LDAP_ADMIN_PASSWORD }}' \
