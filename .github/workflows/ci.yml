@@ -41,6 +41,7 @@ jobs:
             --build-arg MONGO_CONNECTION_STRING='${{ secrets.MONGO_CONNECTION_STRING }}' \
             --build-arg DATABASE_URL='${{ secrets.DATABASE_URL }}' \
             --build-arg PORT='${{ secrets.PORT }}' \
+            --build-arg NODE_ENV='${{ secrets.NODE_ENV }}' \
             --build-arg REFRES_TOKEN_SECRET='${{ secrets.REFRES_TOKEN_SECRET }}' \
             --build-arg TEST_PHONE_NUMBER='${{ secrets.TEST_PHONE_NUMBER }}' \
             --build-arg WHATSAPP_PHONE_ID='${{ secrets.WHATSAPP_PHONE_ID }}' \
