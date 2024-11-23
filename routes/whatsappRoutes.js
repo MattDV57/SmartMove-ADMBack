@@ -201,7 +201,7 @@ router.post("/webhook", async (req, res) => {
 
             testMessage = {
               from: "user",
-              body: "Un usuario quizo entrar al liveChat",
+              body: message,
               sender: "user",
             };
 
