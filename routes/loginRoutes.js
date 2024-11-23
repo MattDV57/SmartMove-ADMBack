@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
 
     const USER_PERMISSIONS = getUserPermissions(accessRole);
 
-    const accessToken = jsonwebtoken.sign(
+    const token = jsonwebtoken.sign(
       {
         userId: user._id,
         email: user.email,
@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
       { expiresIn: "24h" }
     );
 
-    res.cookie("token", accessToken, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       maxAge: 24 * 60 * 60 * 1000, // Expira en 24 horas
