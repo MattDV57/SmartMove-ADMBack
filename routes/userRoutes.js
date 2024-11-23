@@ -48,6 +48,8 @@ router.get('/:userId/profile', checkPermissions(ACCESS_CONTROL.GET_USER_PROFILE)
     if (!user) {
       return res.status(404).send({ message: 'User not found' })
     }
+    
+    user.accessRole = user.accessRole.toLowerCase();
 
     return res.status(200).send(user)
   } catch (error) {

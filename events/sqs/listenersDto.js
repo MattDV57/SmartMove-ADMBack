@@ -1,4 +1,17 @@
+import { MODULE_NAME_MAP } from "../eventNames.js";
 
+const CATEGORY_WEIGHTS = {
+  "Técnicos": 50,
+  "Cobros/Pagos": 40,
+  "Servicio": 30,
+  "Mediaciones": 20,
+  "Información": 10,
+  "Perfil/Usuario": 15,
+  "Inmuebles": 25,
+  "Contrato": 35,
+  "Servicio de Mudanza": 45,
+  "Otros": 5,
+};
 
 export class ClaimCreateDTO {
     constructor(claimData) {
@@ -38,16 +51,23 @@ export class ClaimCreateDTO {
 }
 
 
+export class LogDTO {
+  constructor(eventData) {
+    this.eventType = eventData.name;
+    this.moduleEmiter = MODULE_NAME_MAP[eventData.module];
+    this.timestamp = eventData.timestamp;
+    // this.performedBy = this.getPerformedBy(eventData);
+  }
 
-const CATEGORY_WEIGHTS = {
-    "Técnicos": 50,
-    "Cobros/Pagos": 40,
-    "Servicio": 30,
-    "Mediaciones": 20,
-    "Información": 10,
-    "Perfil/Usuario": 15,
-    "Inmuebles": 25,
-    "Contrato": 35,
-    "Servicio de Mudanza": 45,
-    "Otros": 5,
-  };
+
+  // getPerformedBy(eventData) {
+
+  //   if (this.moduleEmiter === "USER") {
+  //     return eventData.data.username;
+  //   }
+  //   return "N/A";
+  // }
+
+
+}
+

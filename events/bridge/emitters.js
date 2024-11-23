@@ -24,7 +24,7 @@ export const emitClaimEvent = async (claimData, eventName) => {
 }
 
 
-export const emitConfirmContractEvent = async (contractData) => {
+export const emitConfirmContractEvent = async (contractData, eventName) => {
 
   const contractCancelDto = new ContractCancelEventDTO(contractData);
 

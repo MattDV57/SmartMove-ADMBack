@@ -73,7 +73,7 @@ app.use("/events", eventsRoutes);
 
 socketHandler(io)
 
-// pollQueue(); // A eliminar cuando haya lambda
+// pollQueue(); 
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING)

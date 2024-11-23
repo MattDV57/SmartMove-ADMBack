@@ -28,12 +28,12 @@ export const pollQueue = async () => {
         for (const message of response.Messages) {
           await processEvent(message); 
 
-          const deleteParams = {
-            QueueUrl: process.env.SQS_URL,
-            ReceiptHandle: message.ReceiptHandle,
-          };
-          const deleteCommand = new DeleteMessageCommand(deleteParams);
-          await sqsClient.send(deleteCommand);
+          // const deleteParams = {
+          //   QueueUrl: process.env.SQS_URL,
+          //   ReceiptHandle: message.ReceiptHandle,
+          // };
+          // const deleteCommand = new DeleteMessageCommand(deleteParams);
+          // await sqsClient.send(deleteCommand);
         }
       }
     } catch (error) {
@@ -42,6 +42,6 @@ export const pollQueue = async () => {
   };
 
   
-  setInterval(pollMessages, 10000)
+  setInterval(pollMessages, 5000)
 };
 

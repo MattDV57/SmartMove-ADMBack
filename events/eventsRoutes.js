@@ -9,8 +9,9 @@ const router = express.Router()
 
 router.post("/process-message", checkApiKey, async (req, res) => {
     try {
+        console.log("OHHH HIII")
         const message = req.body;
-
+        console.log(message)
         await processEvent(message);
 
         res.status(200).send({ success: true, message: 'Mensaje procesado exitosamente.' });

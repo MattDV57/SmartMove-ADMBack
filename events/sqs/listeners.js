@@ -44,10 +44,11 @@ const findModuleAndEventType = (eventName) => {
 }
 
 const handleCreateLog = async (event, module) => {
+  
   await Log.create({
     eventType: event.name,
     moduleEmitter:  MODULE_NAME_MAP[module],
-    performedBy: event.data?.performedBy || 'Anonimo',
+    // performedBy: event.data?.performedBy || 'Anonimo',
     timestamp: event.timestamp
   })
 }

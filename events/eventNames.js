@@ -1,13 +1,13 @@
 export const INPUT_EVENTS = {
   LOGS: {
-    LEGAL: ['ContratoFirmado'],
-    ACCOUNTING: ['PagoMudanzaRealizada'],
-    REAL_ESTATE: ['PublicacionCreada'],
+    LEGAL: ['NuevoContratoInmueble'], //TODO
+    ACCOUNTING: ['PagoRealizado'],   //TODO
+    REAL_ESTATE: ['PublicacionCreada'], 
     USER: ['UsuarioCreado'],
     LOGISTICS: ['MudanzaSolicitada'],
   },
   LEGAL: {
-    REQUEST_CONTRACT_CANCELATION: 'SolicitudCancelacionContratoCreada'
+    REQUEST_CONTRACT_CANCELATION: 'SolicitudCancelaciónContratoCreada'
   },
   ACCOUNTING: {
   },
@@ -27,7 +27,7 @@ export const OUTPUT_EVENTS = {
   ADMIN_UPDATED: 'AdministradorModificado', // Analitica y Usuarios
   ADMIN_DELETED: 'AdministradorEliminado', // Analitica y Usuarios
   CLAIM_UPDATED: 'ReclamoModificado',
-  CONFIRM_CONTRACT_CANCELATION: 'ConfirmarCancelacionContrato' // Legales
+  CONFIRM_CONTRACT_CANCELATION: 'SolicitudCancelacionContratoAprobado' // Legales
 }
 
 
