@@ -10,6 +10,7 @@ export const authenticateToken = (req, res, next) => {
   }
 
   console.log(token)
+  console.log("ACCESS_TOKEN_SECRET:", process.env.ACCESS_TOKEN_SECRET);
 
   jsonwebtoken.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     console.log("JWT verification error:", err, "Token:", token, user);
