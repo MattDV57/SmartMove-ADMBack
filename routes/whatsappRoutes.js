@@ -199,19 +199,23 @@ router.post("/webhook", async (req, res) => {
           if (message != null) {
             const io = req.app.get("socketio");
 
+            console.log("IO: ", io);
+
             const testMessage = {
               from: "user",
               body: message,
               sender: "user",
             };
 
+            const foundClaim = await findUserActiveClaim(phoneNumber);
+
             const updatedChat = await Chat.findOneAndUpdate(
-              { _id: "673bd1707f112666344fb742" },
+              { _id: foundClaim.relatedChat },
               { $push: { messages: testMessage } },
               { new: true, useFindAndModify: false }
             );
 
-            io.to("673bd1707f112666344fb742").emit("message", testMessage);
+            console.log("UPDATED CHAT", updatedChat);
           }
         }
       }
@@ -271,27 +275,16 @@ const findUserActiveClaim = async (userPhoneNumber) => {
   try {
     const foundClaim = await Claim.findOne({
       "user.userPhoneNumber": userPhoneNumber,
+      category: "WhatsApp",
       status: { $ne: "Cerrado" },
     });
 
     if (foundClaim) {
       return foundClaim;
     }
-
-    //Si no tiene un consulta activo el numero de telefono asociado, crea uno
-
-    const createdChat = await Chat.create({});
-    const createdChatId = createdChat._id.toString();
-
-    const createdClaim = await Claim.create({
-      subject: "Consulta",
-      "user.userPhoneNumber": userPhoneNumber,
-      relatedChat: createdChatId,
-    });
-    return createdClaim;
   } catch (error) {
     console.log(error);
-    return false;
+    return null;
   }
 };
 
