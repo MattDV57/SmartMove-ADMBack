@@ -1,4 +1,6 @@
 import { Chat } from "../models/chatModel.js";
+import { Claim } from "../models/claimModel.js";
+import { sendWhatsAppMessage } from "./sendMessageToWPP.js";
 import { isValidObjectId } from "mongoose";
 
 export const chatMessageHandler = async (io, socket, messageObject) => {
@@ -15,6 +17,18 @@ export const chatMessageHandler = async (io, socket, messageObject) => {
       body: body,
       sender: sender,
     };
+
+    const claim = await Claim.findOne({ relatedChat: chatId });
+    if (claim) {
+      console.log("CLAIM FOUND");
+      if (claim.category == "WhatsApp") {
+        console.log("CLAIM CATEGORY IS WHATSAPP");
+        const phone = claim.user.userPhoneNumber;
+        await sendWhatsAppMessage(body, phone);
+      } else {
+        console.log("CLAIM CATEGORY IS NOT WHATSAPP");
+      }
+    }
 
     const chat = await Chat.findById(chatId);
 
