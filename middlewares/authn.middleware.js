@@ -9,6 +9,8 @@ export const authenticateToken = (req, res, next) => {
     return res.status(401).send({ message: 'Access denied. No token provided.' })
   }
 
+  console.log(token)
+
   jsonwebtoken.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     console.log("JWT verification error:", err, "Token:", token, user);
     if (err) return res.sendStatus(403)
