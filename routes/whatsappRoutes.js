@@ -155,10 +155,21 @@ router.post("/webhook", async (req, res) => {
               message,
               phoneNumber
             );
-            const response = await sendWhatsAppTemplate(
-              messageToSend,
-              phoneNumber
-            );
+
+            if (messageToSend == "chat_en_vivo") {
+              console.log("CREATING LIVE CHAT");
+              const createdClaim = await createUserLiveChat(phoneNumber);
+              console.log("CREATED CLAIM: ", createdClaim);
+              const response = await sendWhatsAppTemplate(
+                messageToSend,
+                phoneNumber
+              );
+            } else {
+              const response = await sendWhatsAppTemplate(
+                messageToSend,
+                phoneNumber
+              );
+            }
 
             console.log("A TEMPLATE HAS BEEN SENT");
             /*if (messageToSend != null && messageToSend == "chat_en_vivo") {
@@ -185,15 +196,22 @@ router.post("/webhook", async (req, res) => {
           let message =
             req.body.entry[0].changes[0].value.messages[0].text.body;
           console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
-          const messageToSend = await messageFlowWithTemplate(
-            message,
-            phoneNumber
-          );
-          if (messageToSend != null) {
-            const response = await sendWhatsAppTemplate(
-              messageToSend,
-              phoneNumber
+          if (message != null) {
+            const io = req.app.get("socketio");
+
+            testMessage = {
+              from: "user",
+              body: "Un usuario quizo entrar al liveChat",
+              sender: "user",
+            };
+
+            const updatedChat = await Chat.findOneAndUpdate(
+              { _id: "673bd1707f112666344fb742" },
+              { $push: { messages: testMessage } },
+              { new: true, useFindAndModify: false }
             );
+
+            io.to("673bd1707f112666344fb742").emit("message", testMessage);
           }
         }
       }
@@ -211,70 +229,6 @@ const messageFlowWithTemplate = async (userMessage, userPhoneNumber) => {
     const templateCode = await getTemplateByCode(userMessage);
     console.log("TEMPLATE CODE: ", templateCode);
     return templateCode;
-
-    const foundClaim = await findUserActiveClaim(userPhoneNumber);
-
-    //Caso 1: El consulta es nuevo
-    if (!foundClaim.description) {
-      foundClaim.description = userMessage;
-      const updatedClaim = await Claim.findOneAndUpdate(
-        { _id: foundClaim._id },
-        { description: userMessage },
-        { new: true }
-      );
-
-      return "Bienvenido a SmartMove! 😊\nPor favor, escribinos tu consulta y te responderemos a la brevedad.";
-    }
-
-    //Caso 3: Cerrar consulta
-    if (
-      userMessage.toLowerCase().includes("cerrar consulta") ||
-      userMessage.toLowerCase().includes("cerrar la consulta") ||
-      userMessage.toLowerCase().includes("cerrar mi consulta")
-    ) {
-      const userMessageBody = {
-        from: userPhoneNumber,
-        body: userMessage,
-      };
-
-      const updatedChat = await Chat.findOneAndUpdate(
-        { _id: foundClaim.relatedChat }, // Find the chat document by its ObjectId
-        { $push: { messages: userMessageBody } }, // Push the new message into the messages array
-        { new: true, useFindAndModify: false } // Return the updated document after the update
-      );
-
-      const updatedClaim = await Claim.findOneAndUpdate(
-        { _id: foundClaim._id },
-        { status: "Cerrado" },
-        { new: true }
-      );
-      return "Tu consulta ha sido cerrada. Gracias por comunicarte con nosotros.";
-    }
-
-    //Caso 2: Ya tenemos la descripcion del consulta
-    if (foundClaim.description) {
-      const userMessageBody = {
-        from: userPhoneNumber,
-        body: userMessage,
-      };
-
-      const updatedChat = await Chat.findOneAndUpdate(
-        { _id: foundClaim.relatedChat }, // Find the chat document by its ObjectId
-        { $push: { messages: userMessageBody } }, // Push the new message into the messages array
-        { new: true, useFindAndModify: false } // Return the updated document after the update
-      );
-
-      return "Gracias por tu mensaje. Estamos trabajando en tu consulta. Por favor, si tienes más información para agregar, escríbenos.";
-    }
-
-    return "Actualmente no podemos procesar tu mensaje, por favor intenta más tarde";
-    //Realizar flujo de comunicacion
-    //1. Recibir mensaje con el comando "crear; consulta; ayuda"
-    //1.1 Crear objeto Chat y un objeto Claim
-    //1.1.1 Asignar Chat al Claim
-    //2 Cada mensaje de ese numero se guarda en el chat
-    //3. Ir actualizando el consulta con lo que dice en el chat? ("descripcion; category; subject")
-    //3.1 Obtener descripcion:
   } catch (error) {
     console.log(error);
     return "Actualmente no podemos procesar tu mensaje, por favor intenta más tarde";

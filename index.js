@@ -44,6 +44,8 @@ const io = new Server(server, {
   },
 });
 
+app.set("socketio", io);
+
 const publicRoutes = [
   { url: "/login", methods: ["POST"] },
   { url: "/auth", methods: ["POST"] },
