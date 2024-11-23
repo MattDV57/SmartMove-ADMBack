@@ -11,7 +11,8 @@ export const authenticateToken = (req, res, next) => {
 
   jsonwebtoken.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) return res.sendStatus(403) 
-    req.user = user 
+    user.accessRole = user.accessRole || user.rol_admin_int;
+    req.user = user;
     next()
   })
 }

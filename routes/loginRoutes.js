@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
       { expiresIn: "24h" }
     );
 
-    res.cookie("accessToken", accessToken, {
+    res.cookie("token", accessToken, {
       httpOnly: true,
       secure: false,
       maxAge: 24 * 60 * 60 * 1000, // Expira en 24 horas
@@ -65,7 +65,7 @@ router.get("/user-session",  async (req, res) => {
 });
 
 router.post("/logout", (req, res) => {
-  res.clearCookie("accessToken", {
+  res.clearCookie("token", {
     httpOnly: true,
     secure: false,
     sameSite: 'Lax'
