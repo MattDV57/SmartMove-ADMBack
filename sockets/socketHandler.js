@@ -46,6 +46,20 @@ const socketHandler = (io) => {
     socket.on("disconnect", () => {
       console.log(` disconnected`);
     });
+
+    socket.on("getLastMessage", async (getObject) => {
+      const chat = await Chat.findById(getObject.chatId);
+      if (chat) {
+        const lastMessage = chat.messages[chat.messages.length - 1];
+        if (lastMessage.body != getObject.message.text) {
+          if (!socket.rooms.has(getObject.chat)) {
+            socket.join(getObject.chatId);
+          }
+          io.to(getObject.chatId).emit("message", lastMessage);
+        } else {
+        }
+      }
+    });
   });
 };
 

@@ -195,8 +195,6 @@ router.post("/webhook", async (req, res) => {
             req.body.entry[0].changes[0].value.messages[0].text.body;
           console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
           if (message != null) {
-            const io = req.app.get("socketio");
-
             const foundClaim = await findUserActiveClaim(phoneNumber);
 
             const messageObject = {
@@ -204,8 +202,6 @@ router.post("/webhook", async (req, res) => {
               body: message,
               sender: "wppUser",
             };
-
-            io.to(foundClaim.relatedChat).emit("message", messageObject);
 
             const updatedChat = await Chat.findOneAndUpdate(
               { _id: foundClaim.relatedChat },
