@@ -29,6 +29,8 @@ router.post("/", async (req, res) => {
         email: user.email,
         username: user.username,
         accessRole,
+        cuit: user.cuit,
+        is_admin: true
       },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "24h" }

@@ -10,7 +10,8 @@ export const authenticateToken = (req, res, next) => {
   }
 
   jsonwebtoken.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403) 
+    console.log("JWT verification error:", err, "Token:", token, user);
+    if (err) return res.sendStatus(403)
     user.accessRole = user.accessRole || user.rol_admin_int.toLowerCase();
     req.user = user;
     next()
