@@ -6,6 +6,7 @@ import axios from "axios";
 import { Claim } from "../models/claimModel.js";
 import { Chat } from "../models/chatModel.js";
 import getTemplateByCode from "../utils/templateHandler.js";
+import { chatMessageHandler } from "../sockets/chatMessageHandler.js";
 import { AssignPublicIp } from "@aws-sdk/client-eventbridge";
 
 const router = express.Router();
@@ -132,13 +133,10 @@ router.post("/webhook", async (req, res) => {
       hasStatuses = true;
     }
     if (reqBody.object && !hasStatuses) {
-      console.log("First check");
       if (reqBody.entry[0].changes[0].value) {
         //TEMPLATE PATH
-        console.log("Second Check");
         console.log("ENTIRE DATA: ", JSON.stringify(req.body));
         if (reqBody.entry[0].changes[0].value.messages[0].type == "button") {
-          console.log("Third Check");
           if (
             req.body.entry[0].changes[0].value.messages[0].from !=
             process.env.TEST_PHONE_NUMBER
@@ -200,6 +198,12 @@ router.post("/webhook", async (req, res) => {
             const io = req.app.get("socketio");
 
             console.log("IO: ", io);
+
+            io.on("connection", (socket) => {
+              async () => {
+                await chatMessageHandler(io, socket, messageObject); // Use the extracted method
+              };
+            });
 
             const testMessage = {
               from: "user",
