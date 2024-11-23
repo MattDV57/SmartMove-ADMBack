@@ -199,7 +199,7 @@ router.post("/webhook", async (req, res) => {
           if (message != null) {
             const io = req.app.get("socketio");
 
-            testMessage = {
+            const testMessage = {
               from: "user",
               body: message,
               sender: "user",
