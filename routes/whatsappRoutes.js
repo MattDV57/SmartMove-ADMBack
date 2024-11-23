@@ -137,9 +137,7 @@ router.post("/webhook", async (req, res) => {
         //TEMPLATE PATH
         console.log("Second Check");
         console.log("ENTIRE DATA: ", JSON.stringify(req.body));
-        if (
-          reqBody.entry[0].changes[0].value.messages[0].type.button != "button"
-        ) {
+        if (reqBody.entry[0].changes[0].value.messages[0].type == "button") {
           console.log("Third Check");
           if (
             req.body.entry[0].changes[0].value.messages[0].from !=
