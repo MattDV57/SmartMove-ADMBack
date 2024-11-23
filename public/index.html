@@ -56,6 +56,7 @@
 
       // Listen for messages (including disconnect messages)
       socket.on("message", (message) => {
+        console.log("MESSAGE", message);
         const div = document.createElement("div");
         div.textContent = message.body;
         messages.appendChild(div);

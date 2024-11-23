@@ -197,25 +197,19 @@ router.post("/webhook", async (req, res) => {
           if (message != null) {
             const io = req.app.get("socketio");
 
-            console.log("IO: ", io);
+            const foundClaim = await findUserActiveClaim(phoneNumber);
 
-            io.on("connection", (socket) => {
-              async () => {
-                await chatMessageHandler(io, socket, messageObject); // Use the extracted method
-              };
-            });
-
-            const testMessage = {
-              from: "user",
+            const messageObject = {
+              from: "wppUser",
               body: message,
-              sender: "user",
+              sender: "wppUser",
             };
 
-            const foundClaim = await findUserActiveClaim(phoneNumber);
+            io.to(foundClaim.relatedChat).emit("message", messageObject);
 
             const updatedChat = await Chat.findOneAndUpdate(
               { _id: foundClaim.relatedChat },
-              { $push: { messages: testMessage } },
+              { $push: { messages: messageObject } },
               { new: true, useFindAndModify: false }
             );
 

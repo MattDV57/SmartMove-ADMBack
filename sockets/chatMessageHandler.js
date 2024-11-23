@@ -6,6 +6,7 @@ import { isValidObjectId } from "mongoose";
 export const chatMessageHandler = async (io, socket, messageObject) => {
   try {
     const { body, from, sender, chatId } = messageObject;
+    console.log("MESSAGE OBJECT: ", messageObject);
 
     if (!isValidObjectId(chatId)) {
       console.log("Invalid chat ID");
@@ -44,7 +45,6 @@ export const chatMessageHandler = async (io, socket, messageObject) => {
     );
 
     if (updatedChat) {
-      console.log(updatedChat);
       if (!socket.rooms.has(chatId)) {
         socket.join(chatId);
       }
