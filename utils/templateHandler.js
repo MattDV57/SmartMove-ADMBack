@@ -2,7 +2,7 @@ const messageTemplateCodeWords = {
   //Funcionalidad
   //"Volver a menú": "primer_mensaje_bienvenida",
   "Volver a menú": "menu_original_with_live_chat",
-  "Terminar el chat": "servidores_estado_caido",
+  "Terminar Chat": "terminar_chat",
 
   //Botones de reclamo
   "Chat en Vivo": "chat_en_vivo",

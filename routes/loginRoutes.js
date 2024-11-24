@@ -4,7 +4,6 @@ import { User } from "../models/userModel.js";
 import jsonwebtoken from "jsonwebtoken";
 import { ACCESS_CONTROL } from "../utils/PERMISSIONS.js";
 
-
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -19,7 +18,7 @@ router.post("/", async (req, res) => {
       return res.status(404).send({ message: "User not found" });
     }
 
-    const accessRole = (user.accessRole).toLowerCase()
+    const accessRole = user.accessRole.toLowerCase();
 
     const USER_PERMISSIONS = getUserPermissions(accessRole);
 
@@ -36,16 +35,19 @@ router.post("/", async (req, res) => {
       { expiresIn: "24h" }
     );
 
+
     res.cookie("token", token, {
       domain: process.env.NODE_ENV === 'production' ? '.smartmove.com.ar' : false,
       path: '/',
       httpOnly: true,
       secure: false,
       maxAge: 24 * 60 * 60 * 1000, // Expira en 24 horas
-      sameSite: 'Lax'
-    })
+      sameSite: "Lax",
+    });
 
-    res.status(200).send({ user: {...user._doc, accessRole}, USER_PERMISSIONS });
+    res
+      .status(200)
+      .send({ user: { ...user._doc, accessRole }, USER_PERMISSIONS });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: "Error on server side" });
@@ -53,14 +55,13 @@ router.post("/", async (req, res) => {
 });
 
 // GET user externo por cookies
-router.get("/user-session",  async (req, res) => {
+router.get("/user-session", async (req, res) => {
   try {
-
-    const accessRole = (req.user.accessRole).toLowerCase()
+    const accessRole = req.user.accessRole.toLowerCase();
 
     const USER_PERMISSIONS = getUserPermissions(accessRole);
 
-    const user = {...req.user, accessRole }
+    const user = { ...req.user, accessRole };
 
     res.status(200).send({ user, USER_PERMISSIONS });
   } catch (error) {
@@ -69,6 +70,12 @@ router.get("/user-session",  async (req, res) => {
 });
 
 router.post("/logout", (req, res) => {
+
+  res.clearCookie("accessToken", {
+    httpOnly: false,
+    secure: true,
+    sameSite: "Lax",
+  });
   res.clearCookie("token", {
     domain: process.env.NODE_ENV === 'production' ? '.smartmove.com.ar' : false,
     path: '/',
@@ -77,20 +84,18 @@ router.post("/logout", (req, res) => {
     sameSite: 'Lax'
   })
 
+
   res.status(200).send({ message: "Succesful logout" });
 });
-
 
 const getUserPermissions = (accessRole) => {
   const USER_PERMISSIONS = {};
 
-    Object.entries(ACCESS_CONTROL).forEach(([method, requiredRoles]) => {
-      USER_PERMISSIONS[method] = requiredRoles.includes(accessRole);
-    });
-  
+  Object.entries(ACCESS_CONTROL).forEach(([method, requiredRoles]) => {
+    USER_PERMISSIONS[method] = requiredRoles.includes(accessRole);
+  });
+
   return USER_PERMISSIONS;
-}
-
-
+};
 
 export default router;

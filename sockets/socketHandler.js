@@ -1,19 +1,9 @@
 import { Chat } from "../models/chatModel.js";
 import { isValidObjectId } from "mongoose";
+import { chatMessageHandler } from "./chatMessageHandler.js";
 
 const socketHandler = (io) => {
   io.on("connection", (socket) => {
-    //TODO: Cliente - Crear Metodo "createRoom"
-    //Deberia inicializar un Chat Model en Mongodb
-    //Utilizar el id de este objeto como el id de la room
-
-    //TODO: Soporte - El equipo de soporte sería el que usa el método "joinChat"
-    //Al unirse debería cargar los chats que el usuario ya mandó, asi los puede ver
-    //O evitamos que el usuario pueda mandar chats hasta que se conecte uno de soporte???
-    //Luego, los dos se comunican en el mismo room normalmente
-    //Se puede agregar encriptación, verificacion de permisos
-    //Funciones como exportar chat a mail serían a través de REST API
-
     //Funcion para crear un chat, usada por el usuario
     socket.on("createChat", async () => {
       const newChatHistory = await Chat.create({});
@@ -51,46 +41,26 @@ const socketHandler = (io) => {
 
     // Handle sending messages to a room
     socket.on("chatMessage", async (messageObject) => {
-      try {
-        const { body, from, sender, chatId } = messageObject;
-        if (!isValidObjectId(chatId)) {
-          //ChatId is not a Mongo object Id, it doesnt exist
-          return;
-        }
-        const newMessage = {
-          from: from,
-          body: body,
-          sender: sender,
-        };
-
-        const chat = await Chat.findById(chatId);
-        if (!chat || !chat.active) {
-          return;
-        }
-
-        const updatedChat = await Chat.findOneAndUpdate(
-          { _id: chatId }, // Find the chat document by its ObjectId
-          { $push: { messages: newMessage } }, // Push the new message into the messages array
-          { new: true, useFindAndModify: false } // Return the updated document after the update
-        );
-
-        if (updatedChat) {
-          console.log(updatedChat);
-          console.log(socket.rooms.has(chatId));
-          socket.join(chatId);
-          io.to(chatId).emit("message", newMessage);
-        }
-      } catch (error) {
-        console.log(error);
-      }
+      await chatMessageHandler(io, socket, messageObject); // Use the extracted method
     });
-
-    // Handle user disconnection
-    //Por ahora solo envía un mensaje, pero podríamos mandar como un mensaje de Template
-    //Si te ha servido la experiencia, comentanos y blah blah blah
-    //E informar también de la opción de exportar chat a mail si la hacemos
     socket.on("disconnect", () => {
       console.log(` disconnected`);
+    });
+
+    socket.on("getLastMessage", async (getObject) => {
+      const chat = await Chat.findById(getObject.chatId);
+      if (chat) {
+        const lastMessage = chat.messages[chat.messages.length - 1];
+        if (lastMessage) {
+          if (lastMessage.body != getObject.message.text) {
+            if (!socket.rooms.has(getObject.chat)) {
+              socket.join(getObject.chatId);
+            }
+            io.to(getObject.chatId).emit("message", lastMessage);
+          } else {
+          }
+        }
+      }
     });
   });
 };
