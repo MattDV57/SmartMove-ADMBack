@@ -15,14 +15,14 @@ const CATEGORY_WEIGHTS = {
 
 export class ClaimCreateDTO {
     constructor(claimData) {
-        this._id = this.claimData.id;
+        this._id = claimData.id;
         this.description =  claimData.descripcion;
         this.category = claimData.categoria;
         this.subject = claimData.asunto;
         this.user = {
             username: claimData.usernameReclamante,
             fullName: claimData.nombreReclamante + " " + claimData.apellidoReclamante,
-            cuil: claimData.cuilReclamante
+            cuit: claimData.cuitReclamante
         };
         this.infractor = {
           username: claimData.usernameInfractor,

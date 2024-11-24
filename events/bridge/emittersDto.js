@@ -28,7 +28,7 @@ export class ClaimEventDTO {
 export class ContractCancelEventDTO {
   constructor(contractData) {
     this.contractId = contractData.contractId;
-    this.userCuil = contractData.userCuil;
+    this.userId = contractData.userId;
     this.hasOpenClaims = contractData.hasOpenClaims;
   } 
 }

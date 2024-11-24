@@ -3,6 +3,7 @@ import mongooseSequence from 'mongoose-sequence'
 import { Chat } from './chatModel.js';
 
 const claimSchema = new mongoose.Schema({
+  _id: { type: String },
   timestamp: { type: Date, default: Date.now },
   status: {
     type: String,
@@ -17,7 +18,7 @@ const claimSchema = new mongoose.Schema({
   user: {
     username: { type: String },
     userId: { type: Number },
-    cuil: { type: Number },
+    cuit: { type: Number },
     userPhoneNumber: { type: Number },
     fullName: { type: String }
   },
