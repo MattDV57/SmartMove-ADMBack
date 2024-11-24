@@ -135,13 +135,11 @@ router.post("/webhook", async (req, res) => {
     if (reqBody.object && !hasStatuses) {
       if (reqBody.entry[0].changes[0].value) {
         //TEMPLATE PATH
-        console.log("ENTIRE DATA: ", JSON.stringify(req.body));
         if (reqBody.entry[0].changes[0].value.messages[0].type == "button") {
           if (
             req.body.entry[0].changes[0].value.messages[0].from !=
             process.env.TEST_PHONE_NUMBER
           ) {
-            console.log("TEMPLATE PATH FROM USER");
             let phoneNumber =
               req.body.entry[0].changes[0].value.messages[0].from;
             if (phoneNumber.startsWith("549")) {
@@ -155,31 +153,25 @@ router.post("/webhook", async (req, res) => {
             );
 
             if (messageToSend == "chat_en_vivo") {
-              console.log("CREATING LIVE CHAT");
               const createdClaim = await createUserLiveChat(phoneNumber);
-              console.log("CREATED CLAIM: ", createdClaim);
             } else if (messageToSend == "terminar_chat") {
               const closedClaim = await closeUserActiveClaim(phoneNumber);
-              console.log("CLOSED CLAIM: ", closedClaim);
             }
             const response = await sendWhatsAppTemplate(
               messageToSend,
               phoneNumber
             );
-            console.log("A TEMPLATE HAS BEEN SENT");
           }
         } else if (
           req.body.entry[0].changes[0].value.messages[0].from !=
           process.env.TEST_PHONE_NUMBER
         ) {
-          console.log("Fourth Check");
           let phoneNumber = req.body.entry[0].changes[0].value.messages[0].from;
           if (phoneNumber.startsWith("549")) {
             phoneNumber = phoneNumber.replace(/^\d{3}/, "54");
           }
           let message =
             req.body.entry[0].changes[0].value.messages[0].text.body;
-          console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
 
           const foundClaim = await findUserActiveClaim(phoneNumber);
 
@@ -200,8 +192,6 @@ router.post("/webhook", async (req, res) => {
               { $push: { messages: messageObject } },
               { new: true, useFindAndModify: false }
             );
-          } else {
-            console.log("NO CLAIM WAS FOUND TO UPDATE CHAT");
           }
         }
       }
@@ -217,7 +207,6 @@ router.post("/webhook", async (req, res) => {
 const messageFlowWithTemplate = async (userMessage, userPhoneNumber) => {
   try {
     const templateCode = await getTemplateByCode(userMessage);
-    console.log("TEMPLATE CODE: ", templateCode);
     return templateCode;
   } catch (error) {
     console.log(error);
