@@ -180,24 +180,28 @@ router.post("/webhook", async (req, res) => {
           let message =
             req.body.entry[0].changes[0].value.messages[0].text.body;
           console.log("RECEIVING A NORMAL MESSAGE FROM USER: ", message);
-          if (message != null) {
-            const foundClaim = await findUserActiveClaim(phoneNumber);
 
-            if (foundClaim != null) {
-              const messageObject = {
-                from: "wppUser",
-                body: message,
-                sender: "wppUser",
-              };
+          const foundClaim = await findUserActiveClaim(phoneNumber);
 
-              const updatedChat = await Chat.findOneAndUpdate(
-                { _id: foundClaim.relatedChat },
-                { $push: { messages: messageObject } },
-                { new: true, useFindAndModify: false }
-              );
-            } else {
-              console.log("NO CLAIM WAS FOUND TO UPDATE CHAT");
-            }
+          if (foundClaim == null && message == "Hola") {
+            const response = await sendWhatsAppTemplate(
+              "menu_original_with_live_chat",
+              phoneNumber
+            );
+          } else if (foundClaim != null) {
+            const messageObject = {
+              from: "wppUser",
+              body: message,
+              sender: "wppUser",
+            };
+
+            const updatedChat = await Chat.findOneAndUpdate(
+              { _id: foundClaim.relatedChat },
+              { $push: { messages: messageObject } },
+              { new: true, useFindAndModify: false }
+            );
+          } else {
+            console.log("NO CLAIM WAS FOUND TO UPDATE CHAT");
           }
         }
       }
