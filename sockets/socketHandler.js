@@ -51,12 +51,14 @@ const socketHandler = (io) => {
       const chat = await Chat.findById(getObject.chatId);
       if (chat) {
         const lastMessage = chat.messages[chat.messages.length - 1];
-        if (lastMessage.body != getObject.message.text) {
-          if (!socket.rooms.has(getObject.chat)) {
-            socket.join(getObject.chatId);
+        if (lastMessage) {
+          if (lastMessage.body != getObject.message.text) {
+            if (!socket.rooms.has(getObject.chat)) {
+              socket.join(getObject.chatId);
+            }
+            io.to(getObject.chatId).emit("message", lastMessage);
+          } else {
           }
-          io.to(getObject.chatId).emit("message", lastMessage);
-        } else {
         }
       }
     });
