@@ -65,7 +65,7 @@ const handleRequestContractCancelation = async (event) => {
 
   const filter = {'user.cuit': event.data.userId, status: "Abierto" };
   const countOpenClaims = await Claim.countDocuments(filter);
-  const hasOpenClaims = countOpenClaims > 0;
+  const hasOpenClaims = countOpenClaims === 0;
 
   if (hasOpenClaims) {
     await emitConfirmContractEvent(
