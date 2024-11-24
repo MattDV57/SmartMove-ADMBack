@@ -3,7 +3,7 @@ export const INPUT_EVENTS = {
     LEGAL: ['NuevoContratoInmueble'], //TODO
     ACCOUNTING: ['PagoRealizado'],   //TODO
     REAL_ESTATE: ['PublicacionCreada'], 
-    USER: ['UsuarioCreado'],
+    USER: ['UsuarioCreado', 'UsuarioModificado', "UsuarioEliminado"],
     LOGISTICS: ['MudanzaSolicitada'],
   },
   LEGAL: {
