@@ -63,12 +63,15 @@ export const handleClaimCreated = async (event) => {
 
 const handleRequestContractCancelation = async (event) => {
 
-  const filter = {'user.username': event.data.username, status: "Abierto" };
+  const filter = {'user.cuil': event.data.cuil, status: "Abierto" };
   const hasOpenClaims = Claim.countDocuments([
     { $match: { ...filter } }
   ]) === 0;
 
-  await emitConfirmContractEvent({contractId :event.data.contract_id, hasOpenClaims}, OUTPUT_EVENTS.CONFIRM_CONTRACT_CANCELATION);
+  await emitConfirmContractEvent(
+    {contractId :event.data.contract_id, hasOpenClaims, userCuil: event.data.cuil}, 
+    OUTPUT_EVENTS.CONFIRM_CONTRACT_CANCELATION
+  );
 
 };
 

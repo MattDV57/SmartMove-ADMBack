@@ -17,6 +17,7 @@ const claimSchema = new mongoose.Schema({
   user: {
     username: { type: String },
     userId: { type: Number },
+    cuil: { type: Number },
     userPhoneNumber: { type: Number },
     fullName: { type: String }
   },

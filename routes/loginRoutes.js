@@ -37,6 +37,8 @@ router.post("/", async (req, res) => {
     );
 
     res.cookie("token", token, {
+      domain: process.env.NODE_ENV === 'production' ? '.smartmove.com.ar' : false,
+      path: '/',
       httpOnly: true,
       secure: false,
       maxAge: 24 * 60 * 60 * 1000, // Expira en 24 horas
@@ -68,6 +70,8 @@ router.get("/user-session",  async (req, res) => {
 
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
+    domain: process.env.NODE_ENV === 'production' ? '.smartmove.com.ar' : false,
+    path: '/',
     httpOnly: true,
     secure: false,
     sameSite: 'Lax'
