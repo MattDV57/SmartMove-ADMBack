@@ -22,20 +22,25 @@ router.post("/", async (req, res) => {
 
     const USER_PERMISSIONS = getUserPermissions(accessRole);
 
-    const accessToken = jsonwebtoken.sign(
+    const token = jsonwebtoken.sign(
       {
         userId: user._id,
         email: user.email,
         username: user.username,
         accessRole,
+        cuit: user.cuit,
+        is_admin: true
       },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "24h" }
     );
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: false,
-      secure: true,
+
+    res.cookie("token", token, {
+      domain: process.env.NODE_ENV === 'production' ? '.smartmove.com.ar' : false,
+      path: '/',
+      httpOnly: true,
+      secure: false,
       maxAge: 24 * 60 * 60 * 1000, // Expira en 24 horas
       sameSite: "Lax",
     });
@@ -65,11 +70,20 @@ router.get("/user-session", async (req, res) => {
 });
 
 router.post("/logout", (req, res) => {
+
   res.clearCookie("accessToken", {
     httpOnly: false,
     secure: true,
     sameSite: "Lax",
   });
+  res.clearCookie("token", {
+    domain: process.env.NODE_ENV === 'production' ? '.smartmove.com.ar' : false,
+    path: '/',
+    httpOnly: true,
+    secure: false,
+    sameSite: 'Lax'
+  })
+
 
   res.status(200).send({ message: "Succesful logout" });
 });

@@ -19,7 +19,7 @@ export const processEvent = async (rawEvent) => {
     await handleCreateLog(event, module);
     return;
   }
-  //TODO: Faltan implemenar algunos eventos que estan en el excel.
+
   switch (event.name) {
     case `${INPUT_EVENTS.USER.CLAIM_CREATED}`:
       await handleClaimCreated(event);
@@ -62,13 +62,16 @@ export const handleClaimCreated = async (event) => {
 };
 
 const handleRequestContractCancelation = async (event) => {
-  //TODO contract_id ? Para que? Quieren que les respondamos de forma inmediata? Que generemos una noti?
-  const filter = {'user.username': event.data.username, status: "Abierto" };
+
+  const filter = {'user.cuil': event.data.cuil, status: "Abierto" };
   const hasOpenClaims = Claim.countDocuments([
     { $match: { ...filter } }
   ]) === 0;
 
-  await emitConfirmContractEvent({contractId :event.data.contract_id, hasOpenClaims}, OUTPUT_EVENTS.CONFIRM_CONTRACT_CANCELATION);
+  await emitConfirmContractEvent(
+    {contractId :event.data.contract_id, hasOpenClaims, userCuil: event.data.cuil}, 
+    OUTPUT_EVENTS.CONFIRM_CONTRACT_CANCELATION
+  );
 
 };
 
