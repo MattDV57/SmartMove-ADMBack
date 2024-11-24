@@ -14,7 +14,6 @@ RUN npm install
 # Copy the application code to the working directory
 COPY --chown=node:node . .
 
-
 # Definimos los argumentos
 ARG ACCESS_TOKEN_SECRET
 ARG API_KEY
