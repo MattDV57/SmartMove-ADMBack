@@ -158,29 +158,15 @@ router.post("/webhook", async (req, res) => {
               console.log("CREATING LIVE CHAT");
               const createdClaim = await createUserLiveChat(phoneNumber);
               console.log("CREATED CLAIM: ", createdClaim);
-              const response = await sendWhatsAppTemplate(
-                messageToSend,
-                phoneNumber
-              );
-            } else {
-              const response = await sendWhatsAppTemplate(
-                messageToSend,
-                phoneNumber
-              );
+            } else if (messageToSend == "terminar_chat") {
+              const closedClaim = await closeUserActiveClaim(phoneNumber);
+              console.log("CLOSED CLAIM: ", closedClaim);
             }
-
+            const response = await sendWhatsAppTemplate(
+              messageToSend,
+              phoneNumber
+            );
             console.log("A TEMPLATE HAS BEEN SENT");
-            /*if (messageToSend != null && messageToSend == "chat_en_vivo") {
-              console.log("USING IO");
-              const io = req.app.get("socketio");
-
-              testMessage = {
-                from: "user",
-                body: "Un usuario quizo entrar al liveChat",
-                sender: "user",
-              };
-              io.to("672e959b3ff1daf56af0e561").emit("message", testMessage);*/
-            //672e959b3ff1daf56af0e561
           }
         } else if (
           req.body.entry[0].changes[0].value.messages[0].from !=
@@ -197,19 +183,21 @@ router.post("/webhook", async (req, res) => {
           if (message != null) {
             const foundClaim = await findUserActiveClaim(phoneNumber);
 
-            const messageObject = {
-              from: "wppUser",
-              body: message,
-              sender: "wppUser",
-            };
+            if (foundClaim != null) {
+              const messageObject = {
+                from: "wppUser",
+                body: message,
+                sender: "wppUser",
+              };
 
-            const updatedChat = await Chat.findOneAndUpdate(
-              { _id: foundClaim.relatedChat },
-              { $push: { messages: messageObject } },
-              { new: true, useFindAndModify: false }
-            );
-
-            console.log("UPDATED CHAT", updatedChat);
+              const updatedChat = await Chat.findOneAndUpdate(
+                { _id: foundClaim.relatedChat },
+                { $push: { messages: messageObject } },
+                { new: true, useFindAndModify: false }
+              );
+            } else {
+              console.log("NO CLAIM WAS FOUND TO UPDATE CHAT");
+            }
           }
         }
       }
@@ -276,10 +264,25 @@ const findUserActiveClaim = async (userPhoneNumber) => {
     if (foundClaim) {
       return foundClaim;
     }
+
+    return null;
   } catch (error) {
     console.log(error);
     return null;
   }
+};
+
+const closeUserActiveClaim = async (userPhoneNumber) => {
+  const updatedClaim = await Claim.findOneAndUpdate(
+    {
+      "user.userPhoneNumber": userPhoneNumber,
+      status: { $ne: "Cerrado" },
+      category: "WhatsApp",
+    },
+    { $set: { status: "Cerrado" } }, // Update operation to set status to "Cerrado"
+    { new: true } // Option to return the updated document
+  );
+  return updatedClaim;
 };
 
 export default router;
