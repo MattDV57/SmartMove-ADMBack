@@ -24,12 +24,10 @@ export const emitClaimEvent = async (claimData, eventName) => {
 }
 
 
-export const emitConfirmContractEvent = async (contractData, eventName) => {
-
-  const contractCancelDto = new ContractCancelEventDTO(contractData);
+export const emitConfirmContractEvent = async (contract_id, eventName) => {
 
   await emitEvent({
     eventName,
-    payload: contractCancelDto
+    payload: contract_id
   })
 }
