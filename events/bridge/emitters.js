@@ -1,5 +1,5 @@
 // emitters.js
-import { AdminEventDTO, ClaimEventDTO, ContractCancelEventDTO } from './emittersDto.js';
+import { AdminEventDTO, ClaimEventDTO, ContractCancelEventDTO, ContractDTO } from './emittersDto.js';
 import { emitEvent } from './eventBridge.js';
 
 
@@ -25,9 +25,11 @@ export const emitClaimEvent = async (claimData, eventName) => {
 
 
 export const emitConfirmContractEvent = async (contract_id, eventName) => {
-
+  
+  const contract = new ContractDTO(contract_id);
+  
   await emitEvent({
     eventName,
-    payload: contract_id
+    payload: contract
   })
 }
