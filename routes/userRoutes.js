@@ -39,12 +39,21 @@ router.get('/', checkPermissions(ACCESS_CONTROL.GET_ALL_USERS), async (req, res)
 })
 
 /**
-Get user by id: /users/:userId
+Get user by id || cuit: /users/:userId
  */
 
 router.get('/:userId/profile', checkPermissions(ACCESS_CONTROL.GET_USER_PROFILE), async (req, res) => {
   try {
-    const user = await User.findOne({ _id: req.params.userId })
+
+    const userId = req.params.userId
+    const isCuit = !isNaN(userId);
+
+    const filter = isCuit
+      ? { cuit: parseInt(userId, 10) } 
+      : { _id: userId }; 
+
+    const user = await User.findOne(filter)
+
     if (!user) {
       return res.status(404).send({ message: 'User not found' })
     }
