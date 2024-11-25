@@ -32,3 +32,9 @@ export class ContractCancelEventDTO {
     this.hasOpenClaims = contractData.hasOpenClaims;
   } 
 }
+
+export class ContractDTO {
+  constructor(contract_id) {
+    this.contract_id = contract_id;
+  } 
+}
