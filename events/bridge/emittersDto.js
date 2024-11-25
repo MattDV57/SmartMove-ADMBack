@@ -14,6 +14,7 @@ export class AdminEventDTO {
 
 export class ClaimEventDTO {
   constructor(claimData) {
+    this.id = claimData._id;
     this.status = claimData.status;
     this.priority = claimData.priority;
     this.user = claimData.user.username;
