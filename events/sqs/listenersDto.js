@@ -1,9 +1,9 @@
 import { MODULE_NAME_MAP } from "../eventNames.js";
 
 const CATEGORY_WEIGHTS = {
-  "Técnicos": 50,
-  "Cobros/Pagos": 40,
-  "Servicio": 30,
+  "Problemas Técnicos": 40,
+  "Cobros Incorrectos": 30,
+  "Servicio Deficiente": 20,
   "Mediaciones": 20,
   "Información": 10,
   "Perfil/Usuario": 15,
@@ -34,7 +34,7 @@ export class ClaimCreateDTO {
     calculatePriority() {
         let score = CATEGORY_WEIGHTS[this.category] || 0;
         
-        const urgencyKeywords = ["urgente", "crítico", "inmediato"];
+        const urgencyKeywords = ["urgente", "crítico", "inmediato", "ayuda"];
         const containsUrgencyKeyword = urgencyKeywords.some((keyword) =>
           (this.description || "").toLowerCase().includes(keyword) ||
           (this.subject || "").toLowerCase().includes(keyword)
