@@ -75,7 +75,7 @@ app.use("/events", eventsRoutes);
 
 socketHandler(io);
 
-// pollQueue();
+pollQueue();
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING)
