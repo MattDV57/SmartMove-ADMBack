@@ -11,7 +11,7 @@ export const authenticateToken = (req, res, next) => {
 
   jsonwebtoken.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) return res.sendStatus(403)
-    user.accessRole = user.accessRole || user.rol_admin_int.toLowerCase();
+    user.accessRole = user.accessRole || user.rol_admin_int ? user.rol_admin_int.toLowerCase() : user.is_admin ? "admin" : undefined;
     user.userId = user.userId || user.cuit;
     req.user = user;
     next()
