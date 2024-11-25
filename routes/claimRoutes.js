@@ -25,7 +25,7 @@ router.get('/involved/:username', checkPermissions(ACCESS_CONTROL.GET_MY_CLAIMS)
   try {
     const filter = Object.values(INTERNAL_ROLES).includes(req.user.accessRole)
       ? { assignedOperator: req.params.username }
-      : { 'user.cuit': req.user.cuit }
+      : { 'user.cuit': parseInt(req.user.cuit, 10) }
 
     const { foundClaimsPaginated, totalClaims } = await getPaginatedClaims(req, filter)
 
